@@ -1,6 +1,7 @@
 local map = vim.keymap.set
 local term = require("snacks.terminal")
 local lazygit = require("snacks.lazygit")
+local opts = { noremap = true, silent = true }
 
 -- run last ran command
 map("n", "<leader>ol", "<cmd>OverseerRestartLast<cr>", { desc = "Overseer Run Last" })
@@ -10,7 +11,7 @@ map("n", "<leader>/", "<cmd>normal gcc<cr>", { desc = "Comment" })
 map("v", "<leader>/", "<cmd>normal gcc<cr>", { desc = "Comment" })
 
 -- quick clear highlighting
-map("n", "<C-[>", "<cmd>nohlsearch<cr>", { noremap = true, silent = true })
+map("n", "<C-[>", "<cmd>nohlsearch<cr>", opts)
 
 -- next quickfix item
 map("n", "]q", ":cnext<cr>zz", { noremap = true, silent = true, desc = "next quickfix" })
@@ -46,3 +47,14 @@ end, { desc = "Lazygit (root dir)" })
 
 -- diff
 map("n", "<leader>ds", "<cmd>windo diffthis<cr>", { desc = "Diff Split" })
+
+-- escape
+map("i", "jk", "<ESC>:w<CR>", opts)
+
+-- buffers
+map("n", "X", ":bdelete!<CR>", opts)
+map("n", "L", ":bnext<CR>", opts)
+map("n", "H", ":bprev<CR>", opts)
+
+map("n", ";p", '"0P', opts) -- Paste last yanked
+map("n", "<esc>", ":set hlsearch!<CR>") -- Toggle search highlight
