@@ -58,3 +58,9 @@ map("n", "H", ":bprev<CR>", opts)
 
 map("n", ";p", '"0P', opts) -- Paste last yanked
 map("n", "<esc>", ":set hlsearch!<CR>") -- Toggle search highlight
+
+-- window resizing
+map("n", "<A-Up>", ":resize +2<CR>", opts)
+map("n", "<A-Down>", ":resize -2<CR>", opts)
+map("n", "<A-Left>", ":vertical resize +2<CR>", opts)
+map("n", "<A-Right>", ":vertical resize -2<CR>", opts)
