@@ -1,5 +1,9 @@
 local opt = vim.opt
 
+local function link(group, other)
+  vim.cmd("highlight! link " .. group .. " " .. other)
+end
+
 -- add highlighting to weird files
 vim.filetype.add({
   filename = {
@@ -46,3 +50,12 @@ opt.cursorline = true
 -- Appearance
 opt.scrolloff = 10
 opt.sidescrolloff = 10
+
+link("MarkviewHeading1", "rainbow1")
+link("MarkviewHeading1Sign", "rainbow1")
+link("MarkviewHeading2", "rainbow2")
+link("MarkviewHeading2Sign", "rainbow2")
+link("MarkviewHeading3", "rainbow3")
+link("MarkviewHeading4", "rainbow4")
+link("MarkviewHeading5", "rainbow5")
+link("MarkviewHeading6", "rainbow6")
