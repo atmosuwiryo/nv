@@ -51,6 +51,10 @@ opt.cursorline = true
 opt.scrolloff = 10
 opt.sidescrolloff = 10
 
+-- disable autoformat
+vim.g.autoformat = false
+
+-- highlights
 link("MarkviewHeading1", "rainbow1")
 link("MarkviewHeading1Sign", "rainbow1")
 link("MarkviewHeading2", "rainbow2")

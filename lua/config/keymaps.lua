@@ -55,9 +55,13 @@ map("i", "jk", "<ESC>:w<CR>", opts)
 map("n", "X", ":bdelete!<CR>", opts)
 map("n", "L", ":bnext<CR>", opts)
 map("n", "H", ":bprev<CR>", opts)
-
+map("n", "gl", vim.diagnostic.open_float, opts)
 map("n", ";p", '"0P', opts) -- Paste last yanked
 map("n", "<esc>", ":set hlsearch!<CR>") -- Toggle search highlight
+map("n", "<leader>uv", function()
+  local new_config = not vim.diagnostic.config().virtual_lines
+  vim.diagnostic.config({ virtual_lines = new_config })
+end, { desc = "Toggle diagnostic virtual_lines" })
 
 -- window resizing
 map("n", "<A-Up>", ":resize +2<CR>", opts)
