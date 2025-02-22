@@ -59,12 +59,49 @@ map("n", "gl", vim.diagnostic.open_float, opts)
 map("n", ";p", '"0P', opts) -- Paste last yanked
 map("n", "<esc>", ":set hlsearch!<CR>") -- Toggle search highlight
 map("n", "<leader>uv", function()
-  local new_config = not vim.diagnostic.config().virtual_lines
-  vim.diagnostic.config({ virtual_lines = new_config })
+  local new_config = not vim.diagnostic.config().virtual_text
+  vim.diagnostic.config({ virtual_text = new_config })
+  -- require("tiny-inline-diagnostic").toggle()
 end, { desc = "Toggle diagnostic virtual_lines" })
+map("n", "gA", vim.lsp.codelens.run, opts)
+map("n", "ga", function()
+  require("tiny-code-action").code_action()
+end, opts)
 
 -- window resizing
 map("n", "<A-Up>", ":resize +2<CR>", opts)
 map("n", "<A-Down>", ":resize -2<CR>", opts)
 map("n", "<A-Left>", ":vertical resize +2<CR>", opts)
 map("n", "<A-Right>", ":vertical resize -2<CR>", opts)
+
+map("n", "<CR>", function()
+  local cur_win = vim.api.nvim_get_current_win()
+  vim.api.nvim_set_var("non_float_total", 0)
+  vim.cmd("windo if &buftype != 'nofile' | let g:non_float_total += 1 | endif")
+  vim.api.nvim_set_current_win(cur_win or 0)
+  if vim.api.nvim_get_var("non_float_total") == 1 then
+    if vim.fn.tabpagenr("$") == 1 then
+      return
+    end
+    vim.cmd("tabclose")
+  else
+    local last_cursor = vim.api.nvim_win_get_cursor(0)
+    vim.cmd("tabedit %:p")
+    vim.api.nvim_win_set_cursor(0, last_cursor)
+  end
+end, { noremap = true, silent = true, nowait = true })
+
+local diagnostic_goto = function(next, severity)
+  local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
+  severity = severity and vim.diagnostic.severity[severity] or nil
+  return function()
+    go({ severity = severity, float = false })
+  end
+end
+map("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
+map("n", "]d", diagnostic_goto(true), { desc = "Next Diagnostic" })
+map("n", "[d", diagnostic_goto(false), { desc = "Prev Diagnostic" })
+map("n", "]e", diagnostic_goto(true, "ERROR"), { desc = "Next Error" })
+map("n", "[e", diagnostic_goto(false, "ERROR"), { desc = "Prev Error" })
+map("n", "]w", diagnostic_goto(true, "WARN"), { desc = "Next Warning" })
+map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
