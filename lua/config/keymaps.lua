@@ -58,15 +58,23 @@ map("n", "H", ":bprev<CR>", opts)
 map("n", "gl", vim.diagnostic.open_float, opts)
 map("n", ";p", '"0P', opts) -- Paste last yanked
 map("n", "<esc>", ":set hlsearch!<CR>") -- Toggle search highlight
+
+-- code
 map("n", "<leader>uv", function()
-  local new_config = not vim.diagnostic.config().virtual_text
-  vim.diagnostic.config({ virtual_text = new_config })
-  -- require("tiny-inline-diagnostic").toggle()
+  -- local new_config = not vim.diagnostic.config().virtual_text
+  -- vim.diagnostic.config({ virtual_text = new_config })
+  require("tiny-inline-diagnostic").toggle()
 end, { desc = "Toggle diagnostic virtual_lines" })
 map("n", "gA", vim.lsp.codelens.run, opts)
 map("n", "ga", function()
   require("tiny-code-action").code_action()
 end, opts)
+map("n", "<leader>st", LazyVim.pick("live_grep"), opts)
+map("n", "<leader>sT", "<cmd>TodoTelescope<cr>", opts)
+map("n", "<leader>cs", "<cmd>Outline<cr>", opts)
+map("n", "<c-`>", function()
+  Snacks.terminal()
+end, {desc = "Toggle Terminal"})
 
 -- window resizing
 map("n", "<A-Up>", ":resize +2<CR>", opts)

@@ -173,6 +173,9 @@ return {
         enabled = false,
       },
     },
+    terminal = {
+      shell = "/bin/sh",
+    },
     dashboard = {
       preset = {
         pick = nil,

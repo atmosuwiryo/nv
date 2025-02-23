@@ -5,13 +5,16 @@ return {
     priority = 1000,
     config = function()
       require("tiny-inline-diagnostic").setup({
-        preset = "modern",
+        preset = "classic",
         virt_texts = {
           priority = 2048,
         },
         -- transparent_bg = true,
         multilines = {
           enabled = true,
+        },
+        options = {
+          use_icons_from_diagnostic = true,
         },
       })
     end,
