@@ -44,9 +44,24 @@ end, { desc = "Terminal (root dir)" })
 map("n", "<leader>gg", function()
   lazygit.open()
 end, { desc = "Lazygit (root dir)" })
-map("n", "<leader>gj", "<cmd>lua require 'gitsigns'.nav_hunk('next', {navigation_message = false})<cr>", {noremap=true, silent=true, desc= "Next Hunk" })
-map("n", "<leader>gk", "<cmd>lua require 'gitsigns'.nav_hunk('prev', {navigation_message = false})<cr>", {noremap=true, silent=true, desc= "Prev Hunk" })
-map("n", "<leader>gr", "<cmd>lua require 'gitsigns'.reset_hunk()<cr>", {noremap=true, silent=true, desc= "Reset Hunk" })
+map(
+  "n",
+  "<leader>gj",
+  "<cmd>lua require 'gitsigns'.nav_hunk('next', {navigation_message = false})<cr>",
+  { noremap = true, silent = true, desc = "Next Hunk" }
+)
+map(
+  "n",
+  "<leader>gk",
+  "<cmd>lua require 'gitsigns'.nav_hunk('prev', {navigation_message = false})<cr>",
+  { noremap = true, silent = true, desc = "Prev Hunk" }
+)
+map(
+  "n",
+  "<leader>gr",
+  "<cmd>lua require 'gitsigns'.reset_hunk()<cr>",
+  { noremap = true, silent = true, desc = "Reset Hunk" }
+)
 
 -- diff
 map("n", "<leader>ds", "<cmd>windo diffthis<cr>", { desc = "Diff Split" })
@@ -77,7 +92,7 @@ map("n", "<leader>sT", "<cmd>TodoTelescope<cr>", opts)
 map("n", "<leader>cs", "<cmd>Outline<cr>", opts)
 map("n", "<c-`>", function()
   Snacks.terminal()
-end, {desc = "Toggle Terminal"})
+end, { desc = "Toggle Terminal" })
 
 -- window resizing
 map("n", "<A-Up>", ":resize +2<CR>", opts)
@@ -116,3 +131,6 @@ map("n", "]e", diagnostic_goto(true, "ERROR"), { desc = "Next Error" })
 map("n", "[e", diagnostic_goto(false, "ERROR"), { desc = "Prev Error" })
 map("n", "]w", diagnostic_goto(true, "WARN"), { desc = "Next Warning" })
 map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
+require("which-key").add({
+  { "<leader>a", group = "Avante", icon = " " },
+})
