@@ -25,6 +25,9 @@ return {
   version = false,
   opts = {
     provider = "copilot",
+    -- rag_service = {
+    --   enabled = true,
+    -- },
     cursor_applying_provider = "copilot",
     copilot = {
       endpoint = "https://api.githubcopilot.com",
@@ -33,7 +36,7 @@ return {
       allow_insecure = false,
       timeout = 30000,
       temperature = 0,
-      max_tokens = 8192,
+      max_tokens = 32768,
     },
     suggestion = {
       debounce = 600,
