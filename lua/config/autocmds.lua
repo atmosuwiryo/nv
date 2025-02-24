@@ -36,3 +36,11 @@ vim.api.nvim_create_autocmd("TermOpen", {
     vim.cmd("startinsert")
   end,
 })
+
+-- Codelens
+vim.api.nvim_create_autocmd({ "BufEnter", "InsertLeave" }, {
+  pattern = { "*.rs, *.go" },
+  callback = function()
+    vim.lsp.codelens.refresh({ bufnr = 0 })
+  end,
+})

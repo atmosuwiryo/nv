@@ -32,7 +32,7 @@ end
 
 return {
   "OXY2DEV/markview.nvim",
-  lazy = false,
+  ft = "markdown",
   dependencies = {
     "nvim-treesitter/nvim-treesitter",
     "nvim-tree/nvim-web-devicons",
@@ -42,11 +42,13 @@ return {
 
     require("markview").setup({
       markdown_inline = {
+        enable = true,
         heckboxes = presets.checkboxes.nerd,
         hyperlinks = generic_hl("MarkviewHyperlink"),
         uri_autolinks = generic_hl("MarkviewEmail"),
       },
       markdown = {
+        enable = true,
         headings = presets.headings.glow,
         tables = presets.tables.rounded,
         code_blocks = { sign = false },

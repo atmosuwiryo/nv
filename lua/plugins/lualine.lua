@@ -282,4 +282,18 @@ return {
       require("lualine").setup(opts)
     end,
   },
+  {
+    "vimpostor/vim-tpipeline",
+    event = "VeryLazy",
+    optional = true,
+    config = function()
+      vim.opt.cmdheight = 0
+      vim.opt.laststatus = 0
+      vim.g.tpipeline_cursormoved = 1
+      -- HACK: lualine hijacks the statusline, so we need to set it back to what we want
+      if vim.env.TMUX then
+        vim.cmd([[ autocmd WinEnter,BufEnter,VimResized,Filetype * setlocal laststatus=0 ]])
+      end
+    end,
+  },
 }

@@ -28,7 +28,7 @@ return {
       },
     },
     codelens = {
-      enabled = true,
+      enabled = false,
     },
   },
 }

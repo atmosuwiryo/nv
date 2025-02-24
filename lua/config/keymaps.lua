@@ -40,10 +40,13 @@ map("n", "<c-/>", function()
   term.toggle()
 end, { desc = "Terminal (root dir)" })
 
--- lazygit
+-- git
 map("n", "<leader>gg", function()
   lazygit.open()
 end, { desc = "Lazygit (root dir)" })
+map("n", "<leader>gj", "<cmd>lua require 'gitsigns'.nav_hunk('next', {navigation_message = false})<cr>", {noremap=true, silent=true, desc= "Next Hunk" })
+map("n", "<leader>gk", "<cmd>lua require 'gitsigns'.nav_hunk('prev', {navigation_message = false})<cr>", {noremap=true, silent=true, desc= "Prev Hunk" })
+map("n", "<leader>gr", "<cmd>lua require 'gitsigns'.reset_hunk()<cr>", {noremap=true, silent=true, desc= "Reset Hunk" })
 
 -- diff
 map("n", "<leader>ds", "<cmd>windo diffthis<cr>", { desc = "Diff Split" })
