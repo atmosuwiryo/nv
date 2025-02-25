@@ -31,7 +31,7 @@ return {
     cursor_applying_provider = "copilot",
     copilot = {
       endpoint = "https://api.githubcopilot.com",
-      model = "claude-3.5-sonnet",
+      model = "claude-3.7-sonnet",
       proxy = nil,
       allow_insecure = false,
       timeout = 30000,
