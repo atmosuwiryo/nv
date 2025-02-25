@@ -11,15 +11,11 @@ return {
         copilot = {
           name = "copilot",
           module = "blink-cmp-copilot",
+          score_offset = 100,
+          async = true,
         },
       },
-      default = {
-        "copilot",
-        "lsp",
-        "path",
-        "snippets",
-        "buffer",
-      },
+      default = { "lsp", "path", "snippets", "buffer", "copilot" },
     },
   },
 }
