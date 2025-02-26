@@ -54,7 +54,6 @@ opt.sidescrolloff = 10
 -- disable autoformat
 vim.g.autoformat = false
 
-
 -- custom
 vim.g.lazyvim_python_lsp = "basedpyright"
 vim.g.lazyvim_python_ruff = "ruff"
@@ -112,3 +111,6 @@ set_hl("TelescopePromptTitle", { fg = bg, bg = red })
 set_hl("TelescopeResultsBorder", { fg = bg, bg = bg })
 set_hl("TelescopeResultsNormal", { bg = bg })
 set_hl("TelescopeResultsTitle", { fg = bg, bg = bg })
+
+-- fold
+opt.foldtext = "v:lua.require'config.utils'.foldtext()"

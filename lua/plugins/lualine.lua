@@ -214,7 +214,7 @@ return {
           },
           ignore_focus = {},
           always_divide_middle = true,
-          globalstatus = true,
+          globalstatus = vim.env.TMUX == nil,
         },
         sections = {
           lualine_a = {
@@ -277,23 +277,36 @@ return {
         end
       end
       opts.options.theme = auto
-
       require("lualine").setup(opts)
+      local lualine_nvim_opts = require("lualine.utils.nvim_opts")
+      local base_set = lualine_nvim_opts.set
+
+      lualine_nvim_opts.set = function(name, val, scope)
+        if vim.env.TMUX and name == "statusline" then
+          if scope and scope.window == vim.api.nvim_get_current_win() then
+            vim.g.tpipeline_statusline = val
+            vim.cmd("silent! call tpipeline#update()")
+          end
+          return
+        end
+        return base_set(name, val, scope)
+      end
     end,
   },
-  -- {
-  --   "vimpostor/vim-tpipeline",
-  --   dependencies = { "nvim-lualine/lualine.nvim" },
-  --   event = "VeryLazy",
-  --   config = function()
-  --     vim.opt.cmdheight = 0
-  --     vim.opt.laststatus = 0
-  --     vim.g.tpipeline_cursormoved = 1
-  --     vim.g.tpipeline_clearstl = 1
-  --     -- HACK: lualine hijacks the statusline, so we need to set it back to what we want
-  --     if vim.env.TMUX then
-  --       vim.cmd([[ autocmd WinEnter,BufEnter,VimResized,Filetype * setlocal laststatus=0 ]])
-  --     end
-  --   end,
-  -- },
+  {
+    "vimpostor/vim-tpipeline",
+    dependencies = { "nvim-lualine/lualine.nvim" },
+    event = "VeryLazy",
+    enabled = vim.env.TMUX ~= nil,
+    config = function()
+      vim.opt.cmdheight = 0
+      vim.opt.laststatus = 0
+      vim.g.tpipeline_cursormoved = 1
+      -- vim.g.tpipeline_clearstl = 1
+      -- HACK: lualine hijacks the statusline, so we need to set it back to what we want
+      -- if vim.env.TMUX then
+      --   vim.cmd([[ autocmd WinEnter,BufEnter,VimResized,Filetype * setlocal laststatus=0 ]])
+      -- end
+    end,
+  },
 }

@@ -20,128 +20,157 @@ local avante_explain_code = "Explain the following code"
 local avante_fix_bugs = "Fix the bugs inside the following codes if any"
 local avante_add_tests = "Implement tests for the following code"
 return {
-  "yetone/avante.nvim",
-  event = "VeryLazy",
-  version = false,
-  opts = {
-    provider = "copilot",
-    -- rag_service = {
-    --   enabled = true,
-    -- },
-    cursor_applying_provider = "copilot",
-    copilot = {
-      endpoint = "https://api.githubcopilot.com",
-      model = "claude-3.7-sonnet",
-      proxy = nil,
-      allow_insecure = false,
-      timeout = 30000,
-      temperature = 0,
-      max_tokens = 32768,
-    },
-    suggestion = {
-      debounce = 600,
-      throttle = 600,
-    },
-    behaviour = {
-      auto_suggestions = false,
-      auto_set_highlight_group = true,
-      auto_set_keymaps = true,
-      auto_apply_diff_after_generation = false,
-      support_paste_from_clipboard = false,
-      minimize_diff = true,
-      enable_token_counting = true,
-      enable_cursor_planning_mode = true,
-    },
-    mappings = {
-      --- @class AvanteConflictMappings
-      diff = {
-        ours = "co",
-        theirs = "ct",
-        all_theirs = "ca",
-        both = "cb",
-        cursor = "cc",
-        next = "]x",
-        prev = "[x",
+  {
+    "zbirenbaum/copilot.lua",
+    cmd = "Copilot",
+    event = "InsertEnter",
+    config = function()
+      require("copilot").setup({
+        filetypes = {
+          ["*"] = false,
+          avante = true,
+          c = true,
+          cpp = true,
+          go = true,
+          help=true,
+          html = true,
+          java = true,
+          javascript = true,
+          javascriptreact = true,
+          lua = true,
+          makrdown = true,
+          python = true,
+          rust = true,
+          typescript = true,
+          typescriptreact = true,
+        },
+      })
+    end,
+  },
+  {
+    "yetone/avante.nvim",
+    event = "VeryLazy",
+    version = false,
+    opts = {
+      provider = "copilot",
+      -- rag_service = {
+      --   enabled = true,
+      -- },
+      cursor_applying_provider = "copilot",
+      copilot = {
+        endpoint = "https://api.githubcopilot.com",
+        model = "claude-3.7-sonnet",
+        proxy = nil,
+        allow_insecure = false,
+        timeout = 30000,
+        temperature = 0,
+        max_tokens = 32768,
       },
       suggestion = {
-        accept = "<M-l>",
-        next = "<M-]>",
-        prev = "<M-[>",
-        dismiss = "<C-]>",
+        debounce = 600,
+        throttle = 600,
       },
-      jump = {
-        next = "]]",
-        prev = "[[",
+      behaviour = {
+        auto_suggestions = false,
+        auto_set_highlight_group = true,
+        auto_set_keymaps = true,
+        auto_apply_diff_after_generation = false,
+        support_paste_from_clipboard = false,
+        minimize_diff = true,
+        enable_token_counting = true,
+        enable_cursor_planning_mode = true,
       },
-      submit = {
-        normal = "<CR>",
-        insert = "<C-s>",
+      mappings = {
+        --- @class AvanteConflictMappings
+        diff = {
+          ours = "co",
+          theirs = "ct",
+          all_theirs = "ca",
+          both = "cb",
+          cursor = "cc",
+          next = "]x",
+          prev = "[x",
+        },
+        suggestion = {
+          accept = "<M-l>",
+          next = "<M-]>",
+          prev = "<M-[>",
+          dismiss = "<C-]>",
+        },
+        jump = {
+          next = "]]",
+          prev = "[[",
+        },
+        submit = {
+          normal = "<CR>",
+          insert = "<C-s>",
+        },
+        sidebar = {
+          apply_all = "A",
+          apply_cursor = "a",
+          switch_windows = "<Tab>",
+          reverse_switch_windows = "<S-Tab>",
+        },
       },
-      sidebar = {
-        apply_all = "A",
-        apply_cursor = "a",
-        switch_windows = "<Tab>",
-        reverse_switch_windows = "<S-Tab>",
+    },
+    build = "make",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "stevearc/dressing.nvim",
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      --- The below dependencies are optional,
+      "zbirenbaum/copilot.lua", -- for providers='copilot'
+    },
+    keys = {
+      {
+        "<leader>al",
+        function()
+          require("avante.api").ask({ question = avante_code_readability_analysis })
+        end,
+        desc = "Code Readability Analysis",
+        mode = { "n", "v" },
       },
-    },
-  },
-  build = "make",
-  dependencies = {
-    "nvim-treesitter/nvim-treesitter",
-    "stevearc/dressing.nvim",
-    "nvim-lua/plenary.nvim",
-    "MunifTanjim/nui.nvim",
-    --- The below dependencies are optional,
-    "zbirenbaum/copilot.lua", -- for providers='copilot'
-  },
-  keys = {
-    {
-      "<leader>al",
-      function()
-        require("avante.api").ask({ question = avante_code_readability_analysis })
-      end,
-      desc = "Code Readability Analysis",
-      mode = { "n", "v" },
-    },
-    {
-      "<leader>ao",
-      function()
-        require("avante.api").ask({ question = avante_optimize_code })
-      end,
-      mode = { "n", "v" },
-      desc = "Optimize Code",
-    },
-    {
-      "<leader>am",
-      function()
-        require("avante.api").ask({ question = avante_summarize })
-      end,
-      mode = { "n", "v" },
-      desc = "Summarize text",
-    },
-    {
-      "<leader>ax",
-      function()
-        require("avante.api").ask({ question = avante_explain_code })
-      end,
-      mode = { "n", "v" },
-      desc = "Explain Code",
-    },
-    {
-      "<leader>ab",
-      function()
-        require("avante.api").ask({ question = avante_fix_bugs })
-      end,
-      mode = { "n", "v" },
-      desc = "Fix Bugs",
-    },
-    {
-      "<leader>au",
-      function()
-        require("avante.api").ask({ question = avante_add_tests })
-      end,
-      mode = { "n", "v" },
-      desc = "Add Tests",
+      {
+        "<leader>ao",
+        function()
+          require("avante.api").ask({ question = avante_optimize_code })
+        end,
+        mode = { "n", "v" },
+        desc = "Optimize Code",
+      },
+      {
+        "<leader>am",
+        function()
+          require("avante.api").ask({ question = avante_summarize })
+        end,
+        mode = { "n", "v" },
+        desc = "Summarize text",
+      },
+      {
+        "<leader>ax",
+        function()
+          require("avante.api").ask({ question = avante_explain_code })
+        end,
+        mode = { "n", "v" },
+        desc = "Explain Code",
+      },
+      {
+        "<leader>ab",
+        function()
+          require("avante.api").ask({ question = avante_fix_bugs })
+        end,
+        mode = { "n", "v" },
+        desc = "Fix Bugs",
+      },
+      {
+        "<leader>au",
+        function()
+          require("avante.api").ask({ question = avante_add_tests })
+        end,
+        mode = { "n", "v" },
+        desc = "Add Tests",
+      },
     },
   },
 }
