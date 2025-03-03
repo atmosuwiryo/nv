@@ -84,6 +84,12 @@ map("n", "<leader>uv", function()
   require("tiny-inline-diagnostic").toggle()
 end, { desc = "Toggle diagnostic virtual_lines" })
 map("n", "gA", vim.lsp.codelens.run, opts)
+map(
+  "n",
+  "gv",
+  "<cmd>vsplit | lua vim.lsp.buf.definition({on_list = function(items) vim.fn.setqflist({}, 'r', items) vim.cmd('cfirst') end})<cr>",
+  opts
+)
 map("n", "ga", function()
   require("tiny-code-action").code_action()
 end, opts)

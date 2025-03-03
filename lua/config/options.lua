@@ -17,6 +17,8 @@ vim.filetype.add({
   },
 })
 
+vim.g.lazyvim_blink_main = true
+
 -- don't show tab indicators
 vim.opt.listchars = { tab = "  " }
 
