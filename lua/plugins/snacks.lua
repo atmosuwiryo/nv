@@ -122,6 +122,15 @@ end
 return {
   "folke/snacks.nvim",
   opts = {
+    lazygit = {
+      theme = {
+        selectedLineBgColor = { bg = "CursorLine" },
+      },
+      win = {
+        width = 0,
+        height = 0,
+      },
+    },
     picker = {
       formatters = {
         file = {
