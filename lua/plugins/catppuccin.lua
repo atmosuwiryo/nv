@@ -62,6 +62,7 @@ return {
         rainbow4 = { fg = "#a6e3a1", bg = "#302D41" },
         rainbow5 = { fg = "#74c7ec", bg = "#302D41" },
         rainbow6 = { fg = "#b4befe", bg = "#302D41" },
+        MarkviewPalette1Fg = { fg = "#d9e0ee" },
       },
     },
   },

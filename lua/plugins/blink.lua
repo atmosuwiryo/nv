@@ -82,6 +82,7 @@ return {
         end
         return {}
       end,
+      completion = { menu = { auto_show = true } },
     }
 
     opts.completion = {
