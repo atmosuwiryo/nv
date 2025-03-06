@@ -64,8 +64,8 @@ local colors = {
   subtext2 = "#9f9ca6",
   subtext3 = "#8b8693",
   subtext4 = "#6c6874",
-  bg_dark = "#1A1B26",
-  -- bg_dark = "#131314",
+  -- bg_dark = "#1A1B26",
+  bg_dark = "#1e1e2e",
   black = "#27272a",
   red = "#ea83a5",
   green = "#90b99f",
@@ -232,10 +232,10 @@ return {
 
       local kuber = {
         function()
-          local filename = vim.fn.expand("%:t")
+          local fname = vim.fn.expand("%:t")
           local kube_env = vim.env.KUBECONFIG
           local kube_filename = "kubectl-edit"
-          if (vim.bo.filetype == "yaml") and (string.sub(filename, 1, kube_filename:len()) == kube_filename) then
+          if (vim.bo.filetype == "yaml") and (string.sub(fname, 1, kube_filename:len()) == kube_filename) then
             return string.format("⎈  (%s)", env_cleanup(kube_env))
           end
           return ""
