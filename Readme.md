@@ -2,7 +2,7 @@
 
 A modern, feature-rich Neovim configuration focused on performance, aesthetics, and developer productivity.
 
-![CleanShot 2025-03-07 at 00 51 47@2x](https://github.com/user-attachments/assets/1a8fe839-d31b-4478-bb60-9793903254ca)
+![dashboard](https://github.com/user-attachments/assets/1a8fe839-d31b-4478-bb60-9793903254ca)
 
 
 ## Features
@@ -68,8 +68,8 @@ Most configuration can be modified by editing the Lua files in the `~/.config/nv
 
 ## Preview
 
-![CleanShot 2025-03-07 at 00 53 23@2x](https://github.com/user-attachments/assets/9c21bb5a-71b8-4562-8ace-259bc41d234b)
-![CleanShot 2025-03-07 at 00 55 21@2x](https://github.com/user-attachments/assets/0ecde105-2744-4705-800a-35345db47fc9)
+![avante neovim](https://github.com/user-attachments/assets/9c21bb5a-71b8-4562-8ace-259bc41d234b)
+![neotest and overseer](https://github.com/user-attachments/assets/0ecde105-2744-4705-800a-35345db47fc9)
 
 
 ## Credits
