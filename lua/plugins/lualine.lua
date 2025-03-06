@@ -144,7 +144,7 @@ return {
             if string.find(fname, cwd) then
               show_name = fname:sub(#cwd + 2)
             else
-              show_name = fname
+              show_name = filename
             end
           end
 
