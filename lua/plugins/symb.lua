@@ -2,63 +2,116 @@ return {
   "Wansmer/symbol-usage.nvim",
   event = "BufReadPre",
   config = function()
-    local function h(name)
-      return vim.api.nvim_get_hl(0, { name = name })
+    local api = vim.api
+    local function get_highlights()
+      local cursorline_bg = api.nvim_get_hl(0, { name = "CursorLine" }).bg
+      local comment_fg = api.nvim_get_hl(0, { name = "Comment" }).fg
+      local function_fg = api.nvim_get_hl(0, { name = "Function" }).fg
+      local type_fg = api.nvim_get_hl(0, { name = "Type" }).fg
+      local keyword_fg = api.nvim_get_hl(0, { name = "@keyword" }).fg
+      return {
+        cursorline_bg = cursorline_bg,
+        comment_fg = comment_fg,
+        function_fg = function_fg,
+        type_fg = type_fg,
+        keyword_fg = keyword_fg,
+      }
+    end
+    local hl = get_highlights()
+    local highlights = {
+      { name = "SymbolUsageRounding", attrs = { fg = hl.cursorline_bg, italic = true } },
+      { name = "SymbolUsageContent", attrs = { bg = hl.cursorline_bg, fg = hl.comment_fg, italic = true } },
+      { name = "SymbolUsageRef", attrs = { fg = hl.function_fg, bg = hl.cursorline_bg, italic = true } },
+      { name = "SymbolUsageDef", attrs = { fg = hl.type_fg, bg = hl.cursorline_bg, italic = true } },
+      { name = "SymbolUsageImpl", attrs = { fg = hl.keyword_fg, bg = hl.cursorline_bg, italic = true } },
+    }
+    for _, highlight in ipairs(highlights) do
+      api.nvim_set_hl(0, highlight.name, highlight.attrs)
     end
 
-    -- hl-groups can have any name
-    vim.api.nvim_set_hl(0, "SymbolUsageRounding", { fg = h("CursorLine").bg, italic = true })
-    vim.api.nvim_set_hl(0, "SymbolUsageContent", { bg = h("CursorLine").bg, fg = h("Comment").fg, italic = true })
-    vim.api.nvim_set_hl(0, "SymbolUsageRef", { fg = h("Function").fg, bg = h("CursorLine").bg, italic = true })
-    vim.api.nvim_set_hl(0, "SymbolUsageDef", { fg = h("Type").fg, bg = h("CursorLine").bg, italic = true })
-    vim.api.nvim_set_hl(0, "SymbolUsageImpl", { fg = h("@keyword").fg, bg = h("CursorLine").bg, italic = true })
+    local static_elements = {
+      round_start = { "", "SymbolUsageRounding" },
+      round_end = { "", "SymbolUsageRounding" },
+      spacer = { " ", "NonText" },
+      ref_icon = { "󰌹 ", "SymbolUsageRef" },
+      def_icon = { "󰳽 ", "SymbolUsageDef" },
+      impl_icon = { "󰡱 ", "SymbolUsageImpl" },
+      stack_icon = { " ", "SymbolUsageImpl" },
+    }
+
+    local format_strings = {
+      usage_single = "%s usage",
+      usage_multiple = "%s usages",
+      usage_none = "no usages",
+      def = "%s defs",
+      impl = "%s impls",
+    }
 
     local function text_format(symbol)
       local res = {}
-
-      local round_start = { "", "SymbolUsageRounding" }
-      local round_end = { "", "SymbolUsageRounding" }
-
-      -- Indicator that shows if there are any other symbols in the same line
-      local stacked_functions_content = symbol.stacked_count > 0 and ("+%s"):format(symbol.stacked_count) or ""
+      local idx = 1
 
       if symbol.references then
-        local usage = symbol.references <= 1 and "usage" or "usages"
-        local num = symbol.references == 0 and "no" or symbol.references
-        table.insert(res, round_start)
-        table.insert(res, { "󰌹 ", "SymbolUsageRef" })
-        table.insert(res, { ("%s %s"):format(num, usage), "SymbolUsageContent" })
-        table.insert(res, round_end)
+        local usage_text
+        if symbol.references == 0 then
+          usage_text = format_strings.usage_none
+        elseif symbol.references == 1 then
+          usage_text = format_strings.usage_single:format(symbol.references)
+        else
+          usage_text = format_strings.usage_multiple:format(symbol.references)
+        end
+        res[idx] = static_elements.round_start
+        idx = idx + 1
+        res[idx] = static_elements.ref_icon
+        idx = idx + 1
+        res[idx] = { usage_text, "SymbolUsageContent" }
+        idx = idx + 1
+        res[idx] = static_elements.round_end
+        idx = idx + 1
       end
 
       if symbol.definition then
-        if #res > 0 then
-          table.insert(res, { " ", "NonText" })
+        if idx > 1 then
+          res[idx] = static_elements.spacer
+          idx = idx + 1
         end
-        table.insert(res, round_start)
-        table.insert(res, { "󰳽 ", "SymbolUsageDef" })
-        table.insert(res, { symbol.definition .. " defs", "SymbolUsageContent" })
-        table.insert(res, round_end)
+        res[idx] = static_elements.round_start
+        idx = idx + 1
+        res[idx] = static_elements.def_icon
+        idx = idx + 1
+        res[idx] = { format_strings.def:format(symbol.definition), "SymbolUsageContent" }
+        idx = idx + 1
+        res[idx] = static_elements.round_end
+        idx = idx + 1
       end
 
       if symbol.implementation then
-        if #res > 0 then
-          table.insert(res, { " ", "NonText" })
+        if idx > 1 then
+          res[idx] = static_elements.spacer
+          idx = idx + 1
         end
-        table.insert(res, round_start)
-        table.insert(res, { "󰡱 ", "SymbolUsageImpl" })
-        table.insert(res, { symbol.implementation .. " impls", "SymbolUsageContent" })
-        table.insert(res, round_end)
+        res[idx] = static_elements.round_start
+        idx = idx + 1
+        res[idx] = static_elements.impl_icon
+        idx = idx + 1
+        res[idx] = { format_strings.impl:format(symbol.implementation), "SymbolUsageContent" }
+        idx = idx + 1
+        res[idx] = static_elements.round_end
+        idx = idx + 1
       end
 
-      if stacked_functions_content ~= "" then
-        if #res > 0 then
-          table.insert(res, { " ", "NonText" })
+      if symbol.stacked_count > 0 then
+        if idx > 1 then
+          res[idx] = static_elements.spacer
+          idx = idx + 1
         end
-        table.insert(res, round_start)
-        table.insert(res, { " ", "SymbolUsageImpl" })
-        table.insert(res, { stacked_functions_content, "SymbolUsageContent" })
-        table.insert(res, round_end)
+        res[idx] = static_elements.round_start
+        idx = idx + 1
+        res[idx] = static_elements.stack_icon
+        idx = idx + 1
+        res[idx] = { "+" .. symbol.stacked_count, "SymbolUsageContent" }
+        idx = idx + 1
+        res[idx] = static_elements.round_end
       end
 
       return res

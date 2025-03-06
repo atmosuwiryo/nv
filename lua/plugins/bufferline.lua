@@ -1,3 +1,8 @@
+local api = vim.api
+local fn = vim.fn
+local startswith = vim.startswith
+local split = vim.split
+
 local g_ok, bufferline_groups = pcall(require, "bufferline.groups")
 if not g_ok then
   bufferline_groups = {
@@ -10,6 +15,19 @@ if not g_ok then
     },
   }
 end
+
+local patterns = {
+  test = { "_spec", "_test", "test_" },
+  docs_exts = { md = true, txt = true, org = true, norg = true, wiki = true },
+  config_files = {
+    ["go.mod"] = true,
+    ["go.sum"] = true,
+    ["Cargo.toml"] = true,
+    ["manage.py"] = true,
+    ["Makefile"] = true,
+  },
+}
+
 return {
   "akinsho/bufferline.nvim",
   opts = {
@@ -24,9 +42,14 @@ return {
       always_show_bufferline = false,
       diagnostics_indicator = function(_, _, diag)
         local icons = LazyVim.config.icons.diagnostics
-        local ret = (diag.error and icons.Error .. diag.error .. " " or "")
-          .. (diag.warning and icons.Warn .. diag.warning or "")
-        return vim.trim(ret)
+        local parts = {}
+        if diag.error then
+          table.insert(parts, icons.Error .. diag.error .. " ")
+        end
+        if diag.warning then
+          table.insert(parts, icons.Warn .. diag.warning)
+        end
+        return vim.trim(table.concat(parts))
       end,
       hover = { enabled = true, reveal = { "close" } },
       mode = "buffers",
@@ -50,7 +73,7 @@ return {
             name = "Internals",
             highlight = { fg = "#ECBE7B" },
             matcher = function(buf)
-              return vim.startswith(buf.path, vim.env.VIMRUNTIME)
+              return startswith(buf.path, vim.env.VIMRUNTIME)
             end,
           },
           {
@@ -58,8 +81,13 @@ return {
             name = "Tests",
             icon = "",
             matcher = function(buf)
-              local name = vim.api.nvim_buf_get_name(buf.id)
-              return name:match("_spec") or name:match("_test") or name:match("test_")
+              local name = api.nvim_buf_get_name(buf.id)
+              for _, pattern in ipairs(patterns.test) do
+                if name:match(pattern) then
+                  return true
+                end
+              end
+              return false
             end,
           },
           {
@@ -71,7 +99,7 @@ return {
           {
             name = "SQL",
             matcher = function(buf)
-              local name = vim.api.nvim_buf_get_name(buf.id)
+              local name = api.nvim_buf_get_name(buf.id)
               return name:match("%.sql$")
             end,
           },
@@ -79,7 +107,7 @@ return {
             name = "View models",
             highlight = { sp = "#03589C" },
             matcher = function(buf)
-              local name = vim.api.nvim_buf_get_name(buf.id)
+              local name = api.nvim_buf_get_name(buf.id)
               return name:match("view_model%.dart")
             end,
           },
@@ -94,31 +122,21 @@ return {
             highlight = { sp = "#C678DD" },
             name = "Docs",
             matcher = function(buf)
-              for _, ext in ipairs({ "md", "txt", "org", "norg", "wiki" }) do
-                if ext == vim.fn.fnamemodify(buf.path, ":e") then
-                  return true
-                end
-              end
+              local ext = fn.fnamemodify(buf.path, ":e")
+              return patterns.docs_exts[ext] or false
             end,
           },
           {
             highlight = { sp = "#F6A878" },
             name = "Config",
             matcher = function(buf)
-              local name = vim.api.nvim_buf_get_name(buf.id)
-              local filename_arr = vim.split(name, "/", { plain = true })
-              local filename = nil
-              if #filename_arr > 0 then
-                filename = filename_arr[#filename_arr]
-              end
-              if filename == nil then
+              local name = api.nvim_buf_get_name(buf.id)
+              local filename_arr = split(name, "/", { plain = true })
+              local filename = filename_arr[#filename_arr]
+              if not filename then
                 return false
               end
-              return filename:match("go.mod")
-                or filename:match("go.sum")
-                or filename:match("Cargo.toml")
-                or filename:match("manage.py")
-                or filename:match("Makefile")
+              return patterns.config_files[filename] or false
             end,
           },
           {
@@ -133,12 +151,12 @@ return {
       separator_style = vim.env.KITTY_WINDOW_ID and "slant" or "thin",
       show_close_icon = false,
       indicator = {
-        icon = "▎", -- this should be omitted if indicator style is not 'icon'
-        style = "icon", -- can also be 'underline'|'none',
+        icon = "▎",
+        style = "icon",
       },
       max_name_length = 18,
-      max_prefix_length = 15, -- prefix used when a buffer is de-duplicated
-      truncate_names = true, -- whether or not tab names should be truncated
+      max_prefix_length = 15,
+      truncate_names = true,
       tab_size = 18,
       color_icons = true,
       show_buffer_close_icons = true,

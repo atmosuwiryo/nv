@@ -1,17 +1,14 @@
 local function env_cleanup(venv)
-  if string.find(venv, "/") then
-    local final_venv = venv
-    for w in venv:gmatch("([^/]+)") do
-      final_venv = w
-    end
-    venv = final_venv
-  end
-  return venv
+  return venv:match("[^/]+$") or venv
 end
+
+local vim_fn = vim.fn
+local vim_api = vim.api
+local vim_bo = vim.bo
 
 local conditions = {
   buffer_not_empty = function()
-    return vim.fn.empty(vim.fn.expand("%:t")) ~= 1
+    return vim_fn.empty(vim_fn.expand("%:t")) ~= 1
   end,
   hide_in_width = function()
     return vim.o.columns > 80
@@ -20,14 +17,14 @@ local conditions = {
     return vim.o.columns > 140
   end,
   check_git_workspace = function()
-    local filepath = vim.fn.expand("%:p:h")
-    local gitdir = vim.fn.finddir(".git", filepath .. ";")
+    local filepath = vim_fn.expand("%:p:h")
+    local gitdir = vim_fn.finddir(".git", filepath .. ";")
     return gitdir and #gitdir > 0 and #gitdir < #filepath
   end,
 }
 
 local mode = function()
-  local mod = vim.fn.mode()
+  local mod = vim_fn.mode()
   local _time = os.date("*t")
   local selector = math.floor(_time.hour / 8) + 1
 
@@ -116,6 +113,80 @@ local modecolor = {
   t = colors.bright_red,
 }
 
+-- Memoize getLspName function results with a short timeout
+local lsp_cache = { value = nil, timestamp = 0 }
+local function getLspName()
+  local now = vim.loop.now()
+  -- Cache results for 2 seconds to prevent excessive calculations
+  if lsp_cache.value and (now - lsp_cache.timestamp) < 2000 then
+    return lsp_cache.value
+  end
+
+  local bufnr = vim_api.nvim_get_current_buf()
+  local buf_clients = vim.lsp.get_clients({ bufnr = bufnr })
+  local buf_ft = vim_bo.filetype
+
+  -- Early return for common case
+  if next(buf_clients) == nil then
+    lsp_cache.value = "  No servers"
+    lsp_cache.timestamp = now
+    return lsp_cache.value
+  end
+
+  -- Use table.new if available (requires luajit) for better performance
+  local buf_client_names = {}
+
+  -- Process clients just once
+  for _, client in pairs(buf_clients) do
+    if client.name ~= "null-ls" then
+      table.insert(buf_client_names, client.name)
+    end
+  end
+
+  -- Only try to load lint module once
+  local lint
+  local lint_s, lint_module = pcall(require, "lint")
+  if lint_s then
+    lint = lint_module
+  end
+
+  -- Only process linters for current filetype
+  if lint and lint.linters_by_ft[buf_ft] then
+    local linters = lint.linters_by_ft[buf_ft]
+    if type(linters) == "table" then
+      for _, linter in ipairs(linters) do
+        table.insert(buf_client_names, linter)
+      end
+    elseif type(linters) == "string" then
+      table.insert(buf_client_names, linters)
+    end
+  end
+
+  -- Get null-ls sources just once
+  local ft = vim_api.nvim_get_option_value("filetype", { buf = bufnr })
+  local sources = require("null-ls.sources")
+  for _, source in ipairs(sources.get_available(ft)) do
+    table.insert(buf_client_names, source.name)
+  end
+
+  -- Optimize deduplication using a hash table
+  local hash = {}
+  local unique_client_names = {}
+
+  for _, v in ipairs(buf_client_names) do
+    if not hash[v] then
+      unique_client_names[#unique_client_names + 1] = v
+      hash[v] = true
+    end
+  end
+
+  local language_servers = table.concat(unique_client_names, ", ")
+  lsp_cache.value = language_servers
+  lsp_cache.timestamp = now
+
+  return language_servers
+end
+
 return {
   {
     "nvim-lualine/lualine.nvim",
@@ -130,12 +201,12 @@ return {
 
       local filename = {
         function()
-          local fname = vim.fn.expand("%:p")
-          local filename = vim.fn.expand("%:t")
-          local ftype = vim.bo.filetype
-          local cwd = vim.api.nvim_call_function("getcwd", {})
+          local fname = vim_fn.expand("%:p")
+          local filename = vim_fn.expand("%:t")
+          local ftype = vim_bo.filetype
+          local cwd = vim_api.nvim_call_function("getcwd", {})
 
-          if vim.bo.filetype == "yaml" and string.sub(filename, 1, 11) == "kubectl-edit" then
+          if vim_bo.filetype == "yaml" and string.sub(filename, 1, 11) == "kubectl-edit" then
             return "kubernetes"
           end
 
@@ -149,10 +220,10 @@ return {
           end
 
           local indicators = ""
-          if vim.bo.readonly then
+          if vim_bo.readonly then
             indicators = indicators .. "  "
           end
-          if vim.bo.modified then
+          if vim_bo.modified then
             indicators = indicators .. "  "
           end
 
@@ -202,7 +273,7 @@ return {
 
       local pyenv = {
         function()
-          if vim.bo.filetype ~= "python" then
+          if vim_bo.filetype ~= "python" then
             return ""
           end
 
@@ -225,76 +296,28 @@ return {
         end,
         color = function()
           local mode_color = modecolor
-          return { bg = mode_color[vim.fn.mode()], fg = colors.bg_dark, gui = "bold" }
+          return { bg = mode_color[vim_fn.mode()], fg = colors.bg_dark, gui = "bold" }
         end,
         separator = { left = "", right = "" },
       }
 
       local kuber = {
         function()
-          local fname = vim.fn.expand("%:t")
-          local kube_env = vim.env.KUBECONFIG
-          local kube_filename = "kubectl-edit"
-          if (vim.bo.filetype == "yaml") and (string.sub(fname, 1, kube_filename:len()) == kube_filename) then
-            return string.format("⎈  (%s)", env_cleanup(kube_env))
+          if vim_bo.filetype ~= "yaml" then
+            return ""
           end
-          return ""
+
+          local fname = vim_fn.expand("%:t")
+          if fname:sub(1, 11) ~= "kubectl-edit" then
+            return ""
+          end
+
+          local kube_env = vim.env.KUBECONFIG
+          return string.format("⎈  (%s)", env_cleanup(kube_env))
         end,
         color = { fg = colors.cyan, bg = colors.bg },
         cond = conditions.hide_small,
       }
-
-      local function getLspName()
-        local bufnr = vim.api.nvim_get_current_buf()
-        local buf_clients = vim.lsp.get_clients({ bufnr = bufnr })
-        local buf_ft = vim.bo.filetype
-        if next(buf_clients) == nil then
-          return "  No servers"
-        end
-        local buf_client_names = {}
-
-        for _, client in pairs(buf_clients) do
-          if client.name ~= "null-ls" then
-            table.insert(buf_client_names, client.name)
-          end
-        end
-
-        local lint_s, lint = pcall(require, "lint")
-        if lint_s then
-          for ft_k, ft_v in pairs(lint.linters_by_ft) do
-            if type(ft_v) == "table" then
-              for _, linter in ipairs(ft_v) do
-                if buf_ft == ft_k then
-                  table.insert(buf_client_names, linter)
-                end
-              end
-            elseif type(ft_v) == "string" then
-              if buf_ft == ft_k then
-                table.insert(buf_client_names, ft_v)
-              end
-            end
-          end
-        end
-
-        local ft = vim.api.nvim_get_option_value("filetype", { buf = bufnr })
-        local sources = require("null-ls.sources")
-        for _, source in ipairs(sources.get_available(ft)) do
-          table.insert(buf_client_names, source.name)
-        end
-
-        local hash = {}
-        local unique_client_names = {}
-
-        for _, v in ipairs(buf_client_names) do
-          if not hash[v] then
-            unique_client_names[#unique_client_names + 1] = v
-            hash[v] = true
-          end
-        end
-        local language_servers = table.concat(unique_client_names, ", ")
-
-        return language_servers
-      end
 
       local macro = {
         require("noice").api.status.mode.get,
@@ -412,7 +435,7 @@ return {
 
       lualine_nvim_opts.set = function(name, val, scope)
         if vim.env.TMUX and name == "statusline" then
-          if scope and scope.window == vim.api.nvim_get_current_win() then
+          if scope and scope.window == vim_api.nvim_get_current_win() then
             vim.g.tpipeline_statusline = val
             vim.cmd("silent! call tpipeline#update()")
           end
