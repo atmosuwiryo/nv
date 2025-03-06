@@ -19,6 +19,16 @@ local avante_summarize = "Summarize the following text"
 local avante_explain_code = "Explain the following code"
 local avante_fix_bugs = "Fix the bugs inside the following codes if any"
 local avante_add_tests = "Implement tests for the following code"
+local avante_security_review = "Review this code for security vulnerabilities and suggest fixes"
+local function ask_with_context(prompt)
+  return function()
+    local filetype = vim.bo.filetype
+    local filename = vim.fn.expand("%:t")
+    local context = string.format("This is %s code from file '%s'. ", filetype, filename)
+    require("avante.api").ask({ question = context .. prompt })
+  end
+end
+
 return {
   {
     "zbirenbaum/copilot.lua",
@@ -32,13 +42,13 @@ return {
           c = true,
           cpp = true,
           go = true,
-          help=true,
+          help = true,
           html = true,
           java = true,
           javascript = true,
           javascriptreact = true,
           lua = true,
-          makrdown = true,
+          markdown = true,
           python = true,
           rust = true,
           typescript = true,
@@ -170,6 +180,30 @@ return {
         end,
         mode = { "n", "v" },
         desc = "Add Tests",
+      },
+      {
+        "<leader>az",
+        ask_with_context(avante_security_review),
+        mode = { "n", "v" },
+        desc = "Security Analysis",
+      },
+
+      {
+        "<leader>ap",
+        function()
+          local filetype_prompts = {
+            lua = "Optimize this Lua code for Neovim performance",
+            python = "Make this Python code more Pythonic and efficient",
+            javascript = "Modernize this JavaScript using current best practices",
+            typescript = "Improve TypeScript type safety in this code",
+            rust = "Refactor this Rust code to use more idiomatic Rust patterns, be more efficient and to use more ergonomic features from recent Rust versions",
+          }
+          local ft = vim.bo.filetype
+          local prompt = filetype_prompts[ft] or ("Improve this code following best practices for " .. ft)
+          require("avante.api").ask({ question = prompt })
+        end,
+        mode = { "n", "v" },
+        desc = "Language-specific improvements",
       },
     },
   },
