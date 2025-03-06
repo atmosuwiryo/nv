@@ -3,35 +3,7 @@ return {
   keys = { { "<leader>cs", "<cmd>Outline<cr>", desc = "Toggle Outline" } },
   cmd = "Outline",
   opts = function()
-    local kind = {
-      Array = " ",
-      Boolean = "󰨙 ",
-      Class = " ",
-      Constant = "",
-      Constructor = " ",
-      Enum = "ℰ",
-      EnumMember = " ",
-      Event = " ",
-      Field = "󰜢",
-      File = "󰈚 ",
-      Function = " ",
-      Interface = " ",
-      Key = " ",
-      Method = "ƒ",
-      Module = " ",
-      Namespace = "󰦮 ",
-      Null = " ",
-      Number = "󰎠 ",
-      Object = " ",
-      Operator = " ",
-      Package = " ",
-      Property = " ",
-      String = "󰅳 ", -- " ","𝓐 " ," " ,"󰅳 "
-      Struct = "󰙅",
-      TypeParameter = " ",
-      Variable = "󰀫 ",
-    }
-
+    local kind = require("config.utils").kind_icons
     local opts = {
       outline_window = {
         position = "right",

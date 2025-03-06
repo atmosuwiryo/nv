@@ -1,67 +1,126 @@
+local function env_cleanup(venv)
+  if string.find(venv, "/") then
+    local final_venv = venv
+    for w in venv:gmatch("([^/]+)") do
+      final_venv = w
+    end
+    venv = final_venv
+  end
+  return venv
+end
+
+local conditions = {
+  buffer_not_empty = function()
+    return vim.fn.empty(vim.fn.expand("%:t")) ~= 1
+  end,
+  hide_in_width = function()
+    return vim.o.columns > 80
+  end,
+  hide_small = function()
+    return vim.o.columns > 140
+  end,
+  check_git_workspace = function()
+    local filepath = vim.fn.expand("%:p:h")
+    local gitdir = vim.fn.finddir(".git", filepath .. ";")
+    return gitdir and #gitdir > 0 and #gitdir < #filepath
+  end,
+}
+
+local mode = function()
+  local mod = vim.fn.mode()
+  local _time = os.date("*t")
+  local selector = math.floor(_time.hour / 8) + 1
+
+  local icons = {
+    normal = { " 󰊠 ", "  ", "  " },
+    insert = { "  ", "  ", "  " },
+    visual = { "  ", "  ", "  " },
+    command = { " 󰏒 ", "  ", "  " },
+    replace = { "  ", "  ", "  " },
+  }
+  local mode_groups = {
+    normal = { "n", "no", "nov" },
+    insert = { "i", "ic", "ix" },
+    visual = { "V", "v", "vs", "Vs", "cv" },
+    command = { "c", "ce" },
+    replace = { "r", "rm", "r?", "R", "Rc", "Rv" },
+  }
+
+  for group, modes in pairs(mode_groups) do
+    for _, m in ipairs(modes) do
+      if mod == m then
+        return icons[group][selector]
+      end
+    end
+  end
+
+  return icons.normal[selector]
+end
+
+local colors = {
+  bg = "#161617",
+  fg = "#c9c7cd",
+  subtext1 = "#b4b1ba",
+  subtext2 = "#9f9ca6",
+  subtext3 = "#8b8693",
+  subtext4 = "#6c6874",
+  bg_dark = "#1A1B26",
+  -- bg_dark = "#131314",
+  black = "#27272a",
+  red = "#ea83a5",
+  green = "#90b99f",
+  yellow = "#e6b99d",
+  purple = "#aca1cf",
+  magenta = "#e29eca",
+  orange = "#f5a191",
+  blue = "#92a2d5",
+  cyan = "#85b5ba",
+  bright_black = "#353539",
+  bright_red = "#f591b2",
+  bright_green = "#9dc6ac",
+  bright_yellow = "#f0c5a9",
+  bright_purple = "#b9aeda",
+  bright_magenta = "#ecaad6",
+  bright_orange = "#ffae9f",
+  bright_blue = "#a6b6e9",
+  bright_cyan = "#99c9ce",
+  gray0 = "#18181a",
+  gray1 = "#1b1b1c",
+  gray2 = "#2a2a2c",
+  gray3 = "#313134",
+  gray4 = "#3b3b3e",
+  -- Special
+  none = "NONE",
+}
+
+local modecolor = {
+  n = colors.red,
+  i = colors.cyan,
+  v = colors.purple,
+  [""] = colors.purple,
+  V = colors.red,
+  c = colors.yellow,
+  no = colors.red,
+  s = colors.yellow,
+  S = colors.yellow,
+  [""] = colors.yellow,
+  ic = colors.yellow,
+  R = colors.green,
+  Rv = colors.purple,
+  cv = colors.red,
+  ce = colors.red,
+  r = colors.cyan,
+  rm = colors.cyan,
+  ["r?"] = colors.cyan,
+  ["!"] = colors.red,
+  t = colors.bright_red,
+}
+
 return {
   {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
     config = function()
-      local colors = {
-        bg = "#161617",
-        fg = "#c9c7cd",
-        subtext1 = "#b4b1ba",
-        subtext2 = "#9f9ca6",
-        subtext3 = "#8b8693",
-        subtext4 = "#6c6874",
-        bg_dark = "#1A1B26",
-        -- bg_dark = "#131314",
-        black = "#27272a",
-        red = "#ea83a5",
-        green = "#90b99f",
-        yellow = "#e6b99d",
-        purple = "#aca1cf",
-        magenta = "#e29eca",
-        orange = "#f5a191",
-        blue = "#92a2d5",
-        cyan = "#85b5ba",
-        bright_black = "#353539",
-        bright_red = "#f591b2",
-        bright_green = "#9dc6ac",
-        bright_yellow = "#f0c5a9",
-        bright_purple = "#b9aeda",
-        bright_magenta = "#ecaad6",
-        bright_orange = "#ffae9f",
-        bright_blue = "#a6b6e9",
-        bright_cyan = "#99c9ce",
-        gray0 = "#18181a",
-        gray1 = "#1b1b1c",
-        gray2 = "#2a2a2c",
-        gray3 = "#313134",
-        gray4 = "#3b3b3e",
-        -- Special
-        none = "NONE",
-      }
-
-      local modecolor = {
-        n = colors.red,
-        i = colors.cyan,
-        v = colors.purple,
-        [""] = colors.purple,
-        V = colors.red,
-        c = colors.yellow,
-        no = colors.red,
-        s = colors.yellow,
-        S = colors.yellow,
-        [""] = colors.yellow,
-        ic = colors.yellow,
-        R = colors.green,
-        Rv = colors.purple,
-        cv = colors.red,
-        ce = colors.red,
-        r = colors.cyan,
-        rm = colors.cyan,
-        ["r?"] = colors.cyan,
-        ["!"] = colors.red,
-        t = colors.bright_red,
-      }
-
       local space = {
         function()
           return " "
@@ -70,7 +129,36 @@ return {
       }
 
       local filename = {
-        "filename",
+        function()
+          local fname = vim.fn.expand("%:p")
+          local filename = vim.fn.expand("%:t")
+          local ftype = vim.bo.filetype
+          local cwd = vim.api.nvim_call_function("getcwd", {})
+
+          if vim.bo.filetype == "yaml" and string.sub(filename, 1, 11) == "kubectl-edit" then
+            return "kubernetes"
+          end
+
+          local show_name = filename
+          if #cwd > 0 and #ftype > 0 then
+            if string.find(fname, cwd) then
+              show_name = fname:sub(#cwd + 2)
+            else
+              show_name = fname
+            end
+          end
+
+          local indicators = ""
+          if vim.bo.readonly then
+            indicators = indicators .. "  "
+          end
+          if vim.bo.modified then
+            indicators = indicators .. "  "
+          end
+
+          return indicators .. show_name
+        end,
+        cond = conditions.buffer_not_empty and conditions.hide_small,
         color = { bg = colors.blue, fg = colors.bg, gui = "bold" },
         separator = { left = "", right = "" },
       }
@@ -80,6 +168,7 @@ return {
         icons_enabled = false,
         color = { bg = colors.gray2, fg = colors.blue, gui = "italic,bold" },
         separator = { left = "", right = "" },
+        cond = conditions.buffer_not_empty and conditions.hide_small,
       }
 
       local branch = {
@@ -87,12 +176,14 @@ return {
         icon = "",
         color = { bg = colors.green, fg = colors.bg, gui = "bold" },
         separator = { left = "", right = "" },
+        cond = conditions.check_git_workspace and conditions.hide_in_width,
       }
 
       local location = {
         "location",
         color = { bg = colors.yellow, fg = colors.bg_dark, gui = "bold" },
         separator = { left = "", right = "" },
+        cond = conditions.buffer_not_empty and conditions.hide_small,
       }
 
       local diff = {
@@ -106,15 +197,51 @@ return {
           modified = { fg = colors.yellow },
           removed = { fg = colors.red },
         },
+        cond = conditions.buffer_not_empty and conditions.hide_small,
+      }
+
+      local pyenv = {
+        function()
+          if vim.bo.filetype ~= "python" then
+            return ""
+          end
+
+          local venv = vim.env.CONDA_DEFAULT_ENV or vim.env.VIRTUAL_ENV
+
+          if venv then
+            return string.format("  %s", env_cleanup(venv))
+          end
+
+          return ""
+        end,
+        separator = { left = "", right = "" },
+        color = { bg = colors.gray2, fg = colors.blue, gui = "italic,bold" },
+        cond = conditions.hide_in_width,
       }
 
       local modes = {
-        "mode",
+        function()
+          return mode()
+        end,
         color = function()
           local mode_color = modecolor
           return { bg = mode_color[vim.fn.mode()], fg = colors.bg_dark, gui = "bold" }
         end,
         separator = { left = "", right = "" },
+      }
+
+      local kuber = {
+        function()
+          local filename = vim.fn.expand("%:t")
+          local kube_env = vim.env.KUBECONFIG
+          local kube_filename = "kubectl-edit"
+          if (vim.bo.filetype == "yaml") and (string.sub(filename, 1, kube_filename:len()) == kube_filename) then
+            return string.format("⎈  (%s)", env_cleanup(kube_env))
+          end
+          return ""
+        end,
+        color = { fg = colors.cyan, bg = colors.bg },
+        cond = conditions.hide_small,
       }
 
       local function getLspName()
@@ -221,6 +348,8 @@ return {
             modes,
           },
           lualine_b = {
+            kuber,
+            pyenv,
             space,
           },
           lualine_c = {

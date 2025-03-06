@@ -1,3 +1,5 @@
+local aucmd = vim.api.nvim_create_autocmd
+
 vim.api.nvim_create_user_command("OverseerRestartLast", function()
   local overseer = require("overseer")
   local tasks = overseer.list_tasks({ recent_first = true })
@@ -9,7 +11,7 @@ vim.api.nvim_create_user_command("OverseerRestartLast", function()
 end, {})
 
 -- Set relative line numbers in normal mode
-vim.api.nvim_create_autocmd({ "InsertEnter" }, {
+aucmd("InsertEnter", {
   pattern = "*",
   callback = function()
     if vim.fn.bufname() ~= "copilot-chat" then
@@ -19,7 +21,7 @@ vim.api.nvim_create_autocmd({ "InsertEnter" }, {
 })
 
 -- and absolute line numbers in insert mode
-vim.api.nvim_create_autocmd({ "InsertLeave" }, {
+aucmd("InsertLeave", {
   pattern = "*",
   callback = function()
     if vim.fn.bufname() ~= "copilot-chat" then
@@ -29,7 +31,7 @@ vim.api.nvim_create_autocmd({ "InsertLeave" }, {
 })
 
 -- Terminal
-vim.api.nvim_create_autocmd("TermOpen", {
+aucmd("TermOpen", {
   callback = function()
     vim.opt_local.number = false
     vim.opt_local.relativenumber = false
@@ -38,12 +40,27 @@ vim.api.nvim_create_autocmd("TermOpen", {
 })
 
 -- Codelens
-vim.api.nvim_create_autocmd({ "BufEnter", "InsertLeave" }, {
+aucmd({ "BufEnter", "InsertLeave" }, {
   pattern = { "*.rs, *.go" },
   callback = function()
     vim.lsp.codelens.refresh({ bufnr = 0 })
   end,
 })
+
+-- aucmd("WinEnter", {
+--   callback = function()
+--     vim.opt_local.number = true
+--     vim.opt_local.relativenumber = true
+--     vim.opt_local.cursorline = true
+--   end,
+-- })
+-- aucmd("WinLeave", {
+--   callback = function()
+--     vim.opt_local.number = false
+--     vim.opt_local.relativenumber = false
+--     vim.opt_local.cursorline = false
+--   end,
+-- })
 
 -- -- blink.cmp hide copilot suggestion
 -- vim.api.nvim_create_autocmd('User', {

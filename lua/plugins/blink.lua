@@ -6,8 +6,6 @@ return {
     },
   },
   opts = function(_, opts)
-    opts.appearance = opts.appearance or {}
-    opts.appearance.use_nvim_cmp_as_default = true
     opts.enabled = function()
       local filetype = vim.bo[0].filetype
       local excluded_filetypes = {
@@ -105,6 +103,11 @@ return {
       },
     }
     opts.signature = { enabled = true }
-    opts.appearance.kind_icons = vim.tbl_extend("force", opts.appearance.kind_icons or {}, LazyVim.config.icons.kinds)
+    local icons = require("config.utils").kind_icons
+    opts.appearance = {
+      use_nvim_cmp_as_default = true,
+      nerd_font_variant = "normal",
+      kind_icons = icons,
+    }
   end,
 }
