@@ -75,7 +75,7 @@ end
 
 function M.toggle_theme()
   if (vim.g.colors_name or ""):find("catppuccin") then
-    vim.cmd.colorscheme("tokyonight")
+    vim.cmd.colorscheme("tokyonight-moon")
   else
     vim.cmd.colorscheme("catppuccin-mocha")
   end

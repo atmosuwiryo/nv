@@ -14,12 +14,70 @@ local avante_code_readability_analysis = [[
   Only list lines with readability issues, in the format <line_num>|<issue and proposed solution>
   If there's no issues with code respond with only: <OK>
 ]]
-local avante_optimize_code = "Optimize the following code"
+local avante_optimize_code = [[
+  Optimize the following code for:
+  - Improved performance
+  - Better readability
+  - Easier Maintainability
+  - Reduced complexity
+  Explain the key optimizations you made.
+]]
 local avante_summarize = "Summarize the following text"
-local avante_explain_code = "Explain the following code"
-local avante_fix_bugs = "Fix the bugs inside the following codes if any"
+local avante_explain_code = [[
+  Explain the following code:
+  - What is its purpose?
+  - How does it work?
+  - What are the key components or algorithms?
+  Use plain language that would help someone new to this codebase.
+]]
+local avante_fix_bugs = [[
+  Fix bugs in the following code:
+  - Identify potential runtime errors
+  - Fix logical issues
+  - Address edge cases
+  - Explain each fix
+]]
+local avante_refactor = [[
+  Refactor this code to improve:
+  - Modularity
+  - Reusability
+  - Maintainability
+  Focus on good software design principles without changing core functionality.
+]]
+local avante_code_review = [[
+  Conduct a thorough code review:
+  - Identify potential bugs or edge cases
+  - Suggest design improvements
+  - Highlight performance concerns
+  - Note any style inconsistencies
+  Provide constructive feedback as if in a professional code review.
+]]
+local avante_architecture_suggestion = [[
+  Analyze this code and suggest architectural improvements:
+  - Identify any design patterns that could be applied
+  - Suggest better structuring of components
+  - Recommend ways to improve separation of concerns
+  - Propose any libraries or techniques that might be beneficial
+]]
 local avante_add_tests = "Implement tests for the following code"
-local avante_security_review = "Review this code for security vulnerabilities and suggest fixes"
+local avante_security_review = [[
+  Perform a comprehensive security review of this code:
+  - Identify potential security vulnerabilities (e.g., injection attacks, improper validation, insecure defaults)
+  - Detect unsafe functions, methods, or API usage
+  - Highlight potential data leaks or exposure of sensitive information
+  - Identify issues with authentication, authorization, or access control
+  - Check for hardcoded credentials or secrets
+  - Assess input validation and sanitization
+  - Evaluate secure coding practices
+  
+  For each issue, provide:
+  1. The specific location in code
+  2. The type of vulnerability
+  3. Potential impact if exploited
+  4. A suggested fix or mitigation strategy
+  
+  If no security issues are found, explain why the code appears secure based on the visible portion.
+]]
 local function ask_with_context(prompt)
   return function()
     local filetype = vim.bo.filetype
@@ -59,7 +117,7 @@ return {
   },
   {
     "yetone/avante.nvim",
-    event = "VeryLazy",
+    -- event = "BufReadPost",
     version = false,
     opts = {
       provider = "copilot",
@@ -72,7 +130,7 @@ return {
         model = "claude-3.7-sonnet",
         proxy = nil,
         allow_insecure = false,
-        timeout = 30000,
+        timeout = 60000,
         temperature = 0,
         max_tokens = 32768,
       },
@@ -130,9 +188,64 @@ return {
       "nvim-lua/plenary.nvim",
       "MunifTanjim/nui.nvim",
       --- The below dependencies are optional,
-      "zbirenbaum/copilot.lua", -- for providers='copilot'
+      -- "zbirenbaum/copilot.lua", -- for providers='copilot'
     },
     keys = {
+      {
+        "<leader>aa",
+        function()
+          require("avante.api").ask()
+        end,
+        desc = "Ask",
+        mode = { "n", "v" },
+      },
+
+      {
+        "<leader>ar",
+        function()
+          require("avante.api").ask({ question = avante_refactor })
+        end,
+        mode = { "n", "v" },
+        desc = "Refactor Code",
+      },
+      {
+        "<leader>af",
+        "<cmd>AvanteClear<cr>",
+        mode = { "n", "v" },
+        desc = "Clear",
+      },
+      {
+        "<leader>av",
+        function()
+          require("avante.api").ask({ question = avante_code_review })
+        end,
+        mode = { "n", "v" },
+        desc = "Code Review",
+      },
+      {
+        "<leader>aA",
+        function()
+          require("avante.api").ask({ question = avante_architecture_suggestion })
+        end,
+        mode = { "n", "v" },
+        desc = "Architecture Suggestions",
+      },
+      {
+        "<leader>ae",
+        function()
+          require("avante.api").edit()
+        end,
+        desc = "Edit",
+        mode = { "n", "v" },
+      },
+      {
+        "<leader>a?",
+        function()
+          require("avante.api").select_model()
+        end,
+        desc = "Select model",
+        mode = "n",
+      },
       {
         "<leader>al",
         function()
@@ -159,17 +272,13 @@ return {
       },
       {
         "<leader>ax",
-        function()
-          require("avante.api").ask({ question = avante_explain_code })
-        end,
+        ask_with_context(avante_explain_code),
         mode = { "n", "v" },
         desc = "Explain Code",
       },
       {
         "<leader>ab",
-        function()
-          require("avante.api").ask({ question = avante_fix_bugs })
-        end,
+        ask_with_context(avante_fix_bugs),
         mode = { "n", "v" },
         desc = "Fix Bugs",
       },
