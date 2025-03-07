@@ -139,5 +139,4 @@ map("n", "]w", diagnostic_goto(true, "WARN"), { desc = "Next Warning" })
 map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
 require("which-key").add({
   { "<leader>a", group = "Avante", icon = " " },
-  { "<leader>y", "<cmd>lua require('symbol-usage').toggle()<cr>", desc = "Toggle Symbols", icon = "󰫦" },
 })

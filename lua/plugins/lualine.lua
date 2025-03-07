@@ -86,7 +86,6 @@ local colors = {
   gray2 = "#2a2a2c",
   gray3 = "#313134",
   gray4 = "#3b3b3e",
-  -- Special
   none = "NONE",
 }
 
@@ -113,11 +112,9 @@ local modecolor = {
   t = colors.bright_red,
 }
 
--- Memoize getLspName function results with a short timeout
 local lsp_cache = { value = nil, timestamp = 0 }
 local function getLspName()
   local now = vim.loop.now()
-  -- Cache results for 2 seconds to prevent excessive calculations
   if lsp_cache.value and (now - lsp_cache.timestamp) < 2000 then
     return lsp_cache.value
   end
@@ -126,31 +123,26 @@ local function getLspName()
   local buf_clients = vim.lsp.get_clients({ bufnr = bufnr })
   local buf_ft = vim_bo.filetype
 
-  -- Early return for common case
   if next(buf_clients) == nil then
     lsp_cache.value = "  No servers"
     lsp_cache.timestamp = now
     return lsp_cache.value
   end
 
-  -- Use table.new if available (requires luajit) for better performance
   local buf_client_names = {}
 
-  -- Process clients just once
   for _, client in pairs(buf_clients) do
     if client.name ~= "null-ls" then
       table.insert(buf_client_names, client.name)
     end
   end
 
-  -- Only try to load lint module once
   local lint
   local lint_s, lint_module = pcall(require, "lint")
   if lint_s then
     lint = lint_module
   end
 
-  -- Only process linters for current filetype
   if lint and lint.linters_by_ft[buf_ft] then
     local linters = lint.linters_by_ft[buf_ft]
     if type(linters) == "table" then
@@ -162,14 +154,12 @@ local function getLspName()
     end
   end
 
-  -- Get null-ls sources just once
   local ft = vim_api.nvim_get_option_value("filetype", { buf = bufnr })
   local sources = require("null-ls.sources")
   for _, source in ipairs(sources.get_available(ft)) do
     table.insert(buf_client_names, source.name)
   end
 
-  -- Optimize deduplication using a hash table
   local hash = {}
   local unique_client_names = {}
 

@@ -1,6 +1,10 @@
 return {
   "Wansmer/symbol-usage.nvim",
-  event = "BufReadPre",
+  -- event = "BufReadPre",
+  lazy = true,
+  keys = {
+    { "<leader>y", "<cmd>lua require('symbol-usage').toggle()<cr>", desc = "Toggle Symbols" },
+  },
   config = function()
     local api = vim.api
     local function get_highlights()
