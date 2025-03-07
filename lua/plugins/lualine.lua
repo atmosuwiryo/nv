@@ -203,7 +203,11 @@ return {
           local show_name = filename
           if #cwd > 0 and #ftype > 0 then
             if string.find(fname, cwd) then
-              show_name = fname:sub(#cwd + 2)
+              local relative_path = fname:sub(#cwd + 2)
+              local shortened_path = relative_path:gsub("([^/]+)/", function(dir)
+                return dir:sub(1, 1) .. "/"
+              end)
+              show_name = shortened_path
             else
               show_name = filename
             end
@@ -368,7 +372,6 @@ return {
           lualine_c = {
             branch,
             filetype,
-            space,
             diff,
             space,
             filename,
