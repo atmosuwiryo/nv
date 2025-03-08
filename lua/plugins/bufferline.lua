@@ -3,8 +3,8 @@ local fn = vim.fn
 local startswith = vim.startswith
 local split = vim.split
 
-local g_ok, bufferline_groups = pcall(require, "bufferline.groups")
-if not g_ok then
+local bufferline_groups_loaded, bufferline_groups = pcall(require, "bufferline.groups")
+if not bufferline_groups_loaded then
   bufferline_groups = {
     builtin = {
       pinned = {

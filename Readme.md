@@ -42,6 +42,10 @@ nvim
 > For building blink.cmp you need a working rust environment
 
 
+> [!NOTE]
+> for avante RAG service you need docker and some ollama models, currently it is only enabled for me
+> also you need an API key for tavily web integration, check avante.lua file for more information
+
 ## Plugin Highlights
 
 - **Avante.nvim**: AI-powered code assistance

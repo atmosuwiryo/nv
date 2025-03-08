@@ -41,7 +41,7 @@ aucmd("TermOpen", {
 
 -- Codelens
 aucmd({ "BufEnter", "InsertLeave" }, {
-  pattern = { "*.rs, *.go" },
+  pattern = { "*.rs", "*.go" },
   callback = function()
     vim.lsp.codelens.refresh({ bufnr = 0 })
   end,

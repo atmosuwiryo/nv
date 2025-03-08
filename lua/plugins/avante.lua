@@ -1,4 +1,5 @@
-local avante_code_readability_analysis = [[
+local avante_prompts = {
+  readability_analysis = [[
   You must identify any readability issues in the code snippet.
   Some readability issues to consider:
   - Unclear naming
@@ -13,54 +14,54 @@ local avante_code_readability_analysis = [[
   You may identify additional problems. The user submits a small section of code from a larger file.
   Only list lines with readability issues, in the format <line_num>|<issue and proposed solution>
   If there's no issues with code respond with only: <OK>
-]]
-local avante_optimize_code = [[
+]],
+  optimize_code = [[
   Optimize the following code for:
   - Improved performance
   - Better readability
   - Easier Maintainability
   - Reduced complexity
   Explain the key optimizations you made.
-]]
-local avante_summarize = "Summarize the following text"
-local avante_explain_code = [[
+]],
+  summarize = "Summarize the following text",
+  explain_code = [[
   Explain the following code:
   - What is its purpose?
   - How does it work?
   - What are the key components or algorithms?
   Use plain language that would help someone new to this codebase.
-]]
-local avante_fix_bugs = [[
+]],
+  fix_bugs = [[
   Fix bugs in the following code:
   - Identify potential runtime errors
   - Fix logical issues
   - Address edge cases
   - Explain each fix
-]]
-local avante_refactor = [[
+]],
+  refactor = [[
   Refactor this code to improve:
   - Modularity
   - Reusability
   - Maintainability
   Focus on good software design principles without changing core functionality.
-]]
-local avante_code_review = [[
+]],
+  code_review = [[
   Conduct a thorough code review:
   - Identify potential bugs or edge cases
   - Suggest design improvements
   - Highlight performance concerns
   - Note any style inconsistencies
   Provide constructive feedback as if in a professional code review.
-]]
-local avante_architecture_suggestion = [[
+]],
+  architecture_suggestion = [[
   Analyze this code and suggest architectural improvements:
   - Identify any design patterns that could be applied
   - Suggest better structuring of components
   - Recommend ways to improve separation of concerns
   - Propose any libraries or techniques that might be beneficial
-]]
-local avante_add_tests = "Implement tests for the following code"
-local avante_security_review = [[
+]],
+  add_tests = "Implement tests for the following code",
+  security_review = [[
   Perform a comprehensive security review of this code:
   - Identify potential security vulnerabilities (e.g., injection attacks, improper validation, insecure defaults)
   - Detect unsafe functions, methods, or API usage
@@ -77,13 +78,32 @@ local avante_security_review = [[
   4. A suggested fix or mitigation strategy
   
   If no security issues are found, explain why the code appears secure based on the visible portion.
-]]
+]],
+  language_specific = {
+    lua = "Optimize this Lua code for Neovim performance",
+    python = "Make this Python code more Pythonic and efficient",
+    javascript = "Modernize this JavaScript using current best practices",
+    typescript = "Improve TypeScript type safety in this code",
+    rust = "Refactor this Rust code to use more idiomatic Rust patterns, be more efficient and to use more ergonomic features from recent Rust versions",
+  },
+}
+
 local function ask_with_context(prompt)
   return function()
     local filetype = vim.bo.filetype
     local filename = vim.fn.expand("%:t")
     local context = string.format("This is %s code from file '%s'. ", filetype, filename)
     require("avante.api").ask({ question = context .. prompt })
+  end
+end
+
+local function create_avante_call(prompt, use_context)
+  if use_context then
+    return ask_with_context(prompt)
+  else
+    return function()
+      require("avante.api").ask({ question = prompt })
+    end
   end
 end
 
@@ -119,68 +139,95 @@ return {
     "yetone/avante.nvim",
     -- event = "BufReadPost",
     version = false,
-    opts = {
-      provider = "copilot",
-      -- rag_service = {
-      --   enabled = true,
-      -- },
-      cursor_applying_provider = "copilot",
-      copilot = {
-        endpoint = "https://api.githubcopilot.com",
-        model = "claude-3.7-sonnet",
-        proxy = nil,
-        allow_insecure = false,
-        timeout = 60000,
-        temperature = 0,
-        max_tokens = 32768,
-      },
-      suggestion = {
-        debounce = 600,
-        throttle = 600,
-      },
-      behaviour = {
-        auto_suggestions = false,
-        auto_set_highlight_group = true,
-        auto_set_keymaps = true,
-        auto_apply_diff_after_generation = false,
-        support_paste_from_clipboard = false,
-        minimize_diff = true,
-        enable_token_counting = true,
-        enable_cursor_planning_mode = true,
-      },
-      mappings = {
-        --- @class AvanteConflictMappings
-        diff = {
-          ours = "co",
-          theirs = "ct",
-          all_theirs = "ca",
-          both = "cb",
-          cursor = "cc",
-          next = "]x",
-          prev = "[x",
+    opts = function()
+      local opts = {
+        provider = "copilot",
+        rag_service = {
+          enabled = false,
+        },
+        cursor_applying_provider = "copilot",
+        copilot = {
+          endpoint = "https://api.githubcopilot.com",
+          model = "claude-3.7-sonnet",
+          proxy = nil,
+          allow_insecure = false,
+          timeout = 60000,
+          temperature = 0,
+          max_tokens = 32768,
+          disable_tools = true,
         },
         suggestion = {
-          accept = "<M-l>",
-          next = "<M-]>",
-          prev = "<M-[>",
-          dismiss = "<C-]>",
+          debounce = 900,
+          throttle = 600,
         },
-        jump = {
-          next = "]]",
-          prev = "[[",
+        behaviour = {
+          auto_suggestions = false,
+          auto_set_highlight_group = true,
+          auto_set_keymaps = true,
+          auto_apply_diff_after_generation = false,
+          support_paste_from_clipboard = false,
+          minimize_diff = true,
+          enable_token_counting = true,
+          enable_cursor_planning_mode = true,
         },
-        submit = {
-          normal = "<CR>",
-          insert = "<C-s>",
+        mappings = {
+          --- @class AvanteConflictMappings
+          diff = {
+            ours = "co",
+            theirs = "ct",
+            all_theirs = "ca",
+            both = "cb",
+            cursor = "cc",
+            next = "]x",
+            prev = "[x",
+          },
+          suggestion = {
+            accept = "<M-l>",
+            next = "<M-]>",
+            prev = "<M-[>",
+            dismiss = "<C-]>",
+          },
+          jump = {
+            next = "]]",
+            prev = "[[",
+          },
+          submit = {
+            normal = "<CR>",
+            insert = "<C-s>",
+          },
+          sidebar = {
+            apply_all = "A",
+            apply_cursor = "a",
+            switch_windows = "<Tab>",
+            reverse_switch_windows = "<S-Tab>",
+          },
         },
-        sidebar = {
-          apply_all = "A",
-          apply_cursor = "a",
-          switch_windows = "<Tab>",
-          reverse_switch_windows = "<S-Tab>",
-        },
-      },
-    },
+      }
+      if vim.env.USER == "abz" then
+        opts.auto_suggestions_provider = "ollama"
+        opts.vendors = {
+          ollama = {
+            __inherited_from = "openai",
+            api_key_name = "",
+            endpoint = "http://127.0.0.1:11434",
+            model = "codegemma",
+          },
+        }
+        opts.rag_service = {
+          enabled = true,
+          host_mount = os.getenv("HOME"),
+          provider = "ollama",
+          llm_model = "qwen2.5:1.5b",
+          embed_model = "nomic-embed-text",
+          endpoint = "http://localhost:11434",
+        }
+        opts.web_search_engine = {
+          provider = "tavily",
+        }
+      end
+
+      return opts
+    end,
     build = "make",
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
@@ -199,37 +246,6 @@ return {
         desc = "Ask",
         mode = { "n", "v" },
       },
-
-      {
-        "<leader>ar",
-        function()
-          require("avante.api").ask({ question = avante_refactor })
-        end,
-        mode = { "n", "v" },
-        desc = "Refactor Code",
-      },
-      {
-        "<leader>af",
-        "<cmd>AvanteClear<cr>",
-        mode = { "n", "v" },
-        desc = "Clear",
-      },
-      {
-        "<leader>av",
-        function()
-          require("avante.api").ask({ question = avante_code_review })
-        end,
-        mode = { "n", "v" },
-        desc = "Code Review",
-      },
-      {
-        "<leader>aA",
-        function()
-          require("avante.api").ask({ question = avante_architecture_suggestion })
-        end,
-        mode = { "n", "v" },
-        desc = "Architecture Suggestions",
-      },
       {
         "<leader>ae",
         function()
@@ -237,6 +253,12 @@ return {
         end,
         desc = "Edit",
         mode = { "n", "v" },
+      },
+      {
+        "<leader>af",
+        "<cmd>AvanteClear<cr>",
+        mode = { "n", "v" },
+        desc = "Clear",
       },
       {
         "<leader>a?",
@@ -247,69 +269,72 @@ return {
         mode = "n",
       },
       {
+        "<leader>ar",
+        create_avante_call(avante_prompts.refactor),
+        mode = { "n", "v" },
+        desc = "Refactor Code",
+      },
+      {
+        "<leader>av",
+        create_avante_call(avante_prompts.code_review),
+        mode = { "n", "v" },
+        desc = "Code Review",
+      },
+      {
+        "<leader>aA",
+        create_avante_call(avante_prompts.architecture_suggestion),
+        mode = { "n", "v" },
+        desc = "Architecture Suggestions",
+      },
+      {
         "<leader>al",
-        function()
-          require("avante.api").ask({ question = avante_code_readability_analysis })
-        end,
+        create_avante_call(avante_prompts.readability_analysis),
         desc = "Code Readability Analysis",
         mode = { "n", "v" },
       },
       {
         "<leader>ao",
-        function()
-          require("avante.api").ask({ question = avante_optimize_code })
-        end,
+        create_avante_call(avante_prompts.optimize_code),
         mode = { "n", "v" },
         desc = "Optimize Code",
       },
       {
-        "<leader>am",
-        function()
-          require("avante.api").ask({ question = avante_summarize })
-        end,
-        mode = { "n", "v" },
-        desc = "Summarize text",
-      },
-      {
         "<leader>ax",
-        ask_with_context(avante_explain_code),
+        create_avante_call(avante_prompts.explain_code, true),
         mode = { "n", "v" },
         desc = "Explain Code",
       },
       {
         "<leader>ab",
-        ask_with_context(avante_fix_bugs),
+        create_avante_call(avante_prompts.fix_bugs, true),
         mode = { "n", "v" },
         desc = "Fix Bugs",
       },
       {
         "<leader>au",
-        function()
-          require("avante.api").ask({ question = avante_add_tests })
-        end,
+        create_avante_call(avante_prompts.add_tests),
         mode = { "n", "v" },
         desc = "Add Tests",
       },
       {
         "<leader>az",
-        ask_with_context(avante_security_review),
+        create_avante_call(avante_prompts.security_review, true),
         mode = { "n", "v" },
         desc = "Security Analysis",
       },
-
+      {
+        "<leader>am",
+        create_avante_call(avante_prompts.summarize),
+        mode = { "n", "v" },
+        desc = "Summarize text",
+      },
       {
         "<leader>ap",
         function()
-          local filetype_prompts = {
-            lua = "Optimize this Lua code for Neovim performance",
-            python = "Make this Python code more Pythonic and efficient",
-            javascript = "Modernize this JavaScript using current best practices",
-            typescript = "Improve TypeScript type safety in this code",
-            rust = "Refactor this Rust code to use more idiomatic Rust patterns, be more efficient and to use more ergonomic features from recent Rust versions",
-          }
           local ft = vim.bo.filetype
-          local prompt = filetype_prompts[ft] or ("Improve this code following best practices for " .. ft)
-          require("avante.api").ask({ question = prompt })
+          local prompt = avante_prompts.language_specific[ft]
+            or ("Improve this code following best practices for " .. ft)
+          create_avante_call(prompt)
         end,
         mode = { "n", "v" },
         desc = "Language-specific improvements",
