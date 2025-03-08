@@ -53,7 +53,7 @@ return {
       end,
       hover = { enabled = true, reveal = { "close" } },
       mode = "buffers",
-      sort_by = "insert_after_current",
+      -- sort_by = "insert_after_current",
       custom_areas = {
         right = function()
           return {

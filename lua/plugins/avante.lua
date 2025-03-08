@@ -209,15 +209,15 @@ return {
           ollama = {
             __inherited_from = "openai",
             api_key_name = "",
-            endpoint = "http://127.0.0.1:11434",
-            model = "codegemma",
+            endpoint = "http://localhost:11434",
+            model = "llama3.1",
           },
         }
         opts.rag_service = {
           enabled = true,
           host_mount = os.getenv("HOME"),
           provider = "ollama",
-          llm_model = "qwen2.5:1.5b",
+          llm_model = "llama3.1",
           embed_model = "nomic-embed-text",
           endpoint = "http://localhost:11434",
         }
