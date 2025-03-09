@@ -23,8 +23,21 @@ return {
       end
       return true
     end
+    opts.fuzzy = vim.tbl_deep_extend("force", opts.fuzzy or {}, {
+      use_frecency = true,
+      use_proximity = true,
+    })
     opts.sources = vim.tbl_deep_extend("force", opts.sources or {}, {
-      default = { "lsp", "path", "snippets", "buffer", "copilot" },
+      default = function(_)
+        local success, node = pcall(vim.treesitter.get_node)
+        if vim.bo.filetype == "lua" then
+          return { "lazydev", "lsp", "path" }
+        elseif success and node and vim.tbl_contains({ "comment", "line_comment", "block_comment" }, node:type()) then
+          return { "buffer" }
+        else
+          return { "lsp", "path", "snippets", "buffer", "copilot" }
+        end
+      end,
       providers = {
         lsp = {
           name = "lsp",
@@ -33,6 +46,11 @@ return {
           kind = "LSP",
           min_keyword_length = 2,
           score_offset = 90, -- the higher the number, the higher the priority
+        },
+        lazydev = {
+          name = "LazyDev",
+          module = "lazydev.integrations.blink",
+          score_offset = 92,
         },
         path = {
           name = "Path",
@@ -80,7 +98,10 @@ return {
         end
         return {}
       end,
-      completion = { menu = { auto_show = true } },
+      keymap = {
+        ["<Tab>"] = { "show", "accept" },
+      },
+      completion = { menu = { auto_show = true }, ghost_text = { enabled = false } },
     }
 
     opts.completion = {
@@ -105,7 +126,7 @@ return {
     opts.signature = { enabled = true }
     local icons = require("config.utils").kind_icons
     opts.appearance = {
-      use_nvim_cmp_as_default = true,
+      use_nvim_cmp_as_default = false,
       nerd_font_variant = "normal",
       kind_icons = icons,
     }

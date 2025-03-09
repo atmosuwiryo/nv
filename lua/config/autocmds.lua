@@ -47,6 +47,13 @@ aucmd({ "BufEnter", "InsertLeave" }, {
   end,
 })
 
+aucmd("TermOpen", {
+  pattern = "term://*",
+  callback = function()
+    require("config.utils").set_terminal_keymaps()
+  end,
+})
+
 -- aucmd("WinEnter", {
 --   callback = function()
 --     vim.opt_local.number = true
