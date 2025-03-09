@@ -32,7 +32,6 @@ vim.opt.listchars = { tab = "  " }
 
 -- default options
 opt.ttyfast = true
-opt.wrap = true
 opt.termguicolors = true
 opt.updatetime = 100
 opt.timeoutlen = 250

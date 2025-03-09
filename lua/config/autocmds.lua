@@ -54,6 +54,8 @@ aucmd("TermOpen", {
   end,
 })
 
+vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
+
 -- aucmd("WinEnter", {
 --   callback = function()
 --     vim.opt_local.number = true

@@ -35,7 +35,6 @@ return {
   ft = { "markdown", "Avante" },
   dependencies = {
     "nvim-treesitter/nvim-treesitter",
-    "nvim-tree/nvim-web-devicons",
   },
   config = function()
     local presets = require("markview.presets")
@@ -51,7 +50,7 @@ return {
         enable = true,
         headings = presets.headings.glow,
         tables = presets.tables.rounded,
-        code_blocks = { sign = false },
+        code_blocks = { sign = false, min_width = 80 },
         reference_definitions = generic_hl("MarkviewPalette4Fg"),
       },
       typst = {
