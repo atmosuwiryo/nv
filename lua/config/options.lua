@@ -116,7 +116,11 @@ opt.sidescrolloff = 10
 vim.g.autoformat = false
 
 -- custom
-vim.g.lazyvim_python_lsp = "basedpyright"
+if vim.env.USER == "abz" then
+  vim.g.lazyvim_python_lsp = "pylance"
+else
+  vim.g.lazyvim_python_lsp = "basedpyright"
+end
 vim.g.lazyvim_python_ruff = "ruff"
 
 -- highlights

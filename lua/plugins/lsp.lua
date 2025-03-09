@@ -43,5 +43,58 @@ return {
     opts.inlay_hints = {
       enabled = false,
     }
+    -- opts.servers = opts.servers or {}
+    if vim.env.USER == "abz" then
+      local root_files = {
+        "pyproject.toml",
+        "setup.py",
+        "setup.cfg",
+        "requirements.txt",
+        "Pipfile",
+      }
+
+      local function exepath(expr)
+        local ep = vim.fn.exepath(expr)
+        return ep ~= "" and ep or nil
+      end
+      local configs = require("lspconfig.configs")
+      configs.pylance = {
+        default_config = {
+          before_init = function(_, config)
+            if not config.settings.python then
+              config.settings.python = {}
+            end
+            if not config.settings.python.pythonPath then
+              config.settings.python.pythonPath = exepath("python3") or exepath("python") or "python"
+            end
+          end,
+          cmd = {
+            "node",
+            vim.fn.expand(
+              "~/.pylance/extension/dist/server.bundle.js",
+              false,
+              true
+            )[1],
+            "--stdio",
+          },
+          filetypes = { "python" },
+          single_file_support = true,
+          root_dir = require("lspconfig.util").root_pattern(unpack(root_files)),
+          settings = {
+            python = {
+              analysis = {
+                inlayHints = {
+                  variableTypes = true,
+                  functionReturnTypes = false,
+                  callArgumentNames = true,
+                  pytestParameters = true,
+                },
+              },
+            },
+          },
+        },
+      }
+      require("lspconfig").pylance.setup({})
+    end
   end,
 }
