@@ -205,21 +205,23 @@ return {
       }
       if vim.env.USER == "abz" then
         opts.auto_suggestions_provider = "ollama"
-        opts.vendors = {
-          ollama = {
-            __inherited_from = "openai",
-            api_key_name = "",
-            endpoint = "http://localhost:11434",
-            model = "llama3.1",
+        opts.memory_summary_provider = "ollama"
+        opts.ollama = {
+          model = "llama3.1",
+          endpoint = "http://host.docker.internal:11434",
+          options = {
+            temperature = 0,
+            num_ctx = 32768,
           },
         }
+        opts.cursor_applying_provider = "ollama"
         opts.rag_service = {
           enabled = true,
           host_mount = os.getenv("HOME"),
           provider = "ollama",
           llm_model = "llama3.1",
           embed_model = "nomic-embed-text",
-          endpoint = "http://localhost:11434",
+          endpoint = "http://host.docker.internal:11434",
         }
         opts.web_search_engine = {
           provider = "tavily",
