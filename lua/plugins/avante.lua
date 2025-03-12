@@ -155,6 +155,7 @@ return {
           temperature = 0,
           max_tokens = 32768,
           disable_tools = true,
+          telemetry = false,
         },
         suggestion = {
           debounce = 900,
@@ -208,7 +209,7 @@ return {
         opts.memory_summary_provider = "ollama"
         opts.ollama = {
           model = "llama3.1",
-          endpoint = "http://host.docker.internal:11434",
+          endpoint = "http://127.0.0.1:11434",
           options = {
             temperature = 0,
             num_ctx = 32768,
