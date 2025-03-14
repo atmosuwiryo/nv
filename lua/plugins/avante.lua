@@ -174,6 +174,8 @@ Response Format:
 	•	Explanation:
 	•	Recommended Fix:
 	•	OWASP Reference(if applicable):
+
+Just give me Critical and High severity vulnerabilities
 ]],
 
   language_specific = {
@@ -331,18 +333,15 @@ Response Format:
   ]],
 }
 
-local function ask_with_context(prompt)
-  return function()
-    local filetype = vim.bo.filetype
-    local filename = vim.fn.expand("%:t")
-    local context = string.format("This is %s code from file '%s'. ", filetype, filename)
-    require("avante.api").ask({ question = context .. prompt })
-  end
-end
-
 local function create_avante_call(prompt, use_context)
   if use_context then
-    return ask_with_context(prompt)
+    local filetype = vim.bo.filetype ~= "" and vim.bo.filetype or "unknown"
+    local filename = vim.fn.expand("%:t")
+    filename = filename ~= "" and filename or "unnamed buffer"
+    local context = string.format("This is %s code from file '%s'. ", filetype, filename)
+    return function()
+      require("avante.api").ask({ question = context .. prompt })
+    end
   else
     return function()
       require("avante.api").ask({ question = prompt })
@@ -570,7 +569,7 @@ return {
       },
       {
         "<leader>az",
-        create_avante_call(avante_prompts.security_review, true),
+        create_avante_call(avante_prompts.security_review),
         mode = { "n", "v" },
         desc = "Security Analysis",
       },
@@ -586,7 +585,7 @@ return {
           local ft = vim.bo.filetype
           local prompt = avante_prompts.language_specific[ft]
             or ("Improve this code following best practices for " .. ft)
-          create_avante_call(prompt)
+          create_avante_call(prompt)()
         end,
         mode = { "n", "v" },
         desc = "Language-specific improvements",
