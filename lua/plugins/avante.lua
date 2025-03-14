@@ -447,25 +447,28 @@ return {
         },
       }
       if vim.env.USER == "abz" then
-        opts.auto_suggestions_provider = "ollama"
-        opts.memory_summary_provider = "ollama"
-        opts.ollama = {
-          model = "llama3.1",
-          endpoint = "http://127.0.0.1:11434",
-          options = {
-            temperature = 0,
-            num_ctx = 32768,
-          },
-        }
-        opts.cursor_applying_provider = "ollama"
-        opts.rag_service = {
-          enabled = true,
-          host_mount = os.getenv("HOME"),
-          provider = "ollama",
-          llm_model = "llama3.1",
-          embed_model = "nomic-embed-text",
-          endpoint = "http://host.docker.internal:11434",
-        }
+        -- opts.auto_suggestions_provider = "ollama"
+        -- opts.memory_summary_provider = "ollama"
+        -- opts.ollama = {
+        --   model = "llama3.1:latest",
+        --   endpoint = "http://127.0.0.1:11434",
+        --   options = {
+        --     temperature = 0,
+        --     num_ctx = 32768,
+        --   },
+        -- }
+        opts.copilot.disable_tools = false
+        opts.auto_suggestions_provider = "copilot"
+        opts.memory_summary_provider = "copilot"
+        -- opts.cursor_applying_provider = "ollama"
+        -- opts.rag_service = {
+        --   enabled = true,
+        --   host_mount = os.getenv("HOME"),
+        --   provider = "ollama",
+        --   llm_model = "llama3.1:latest",
+        --   embed_model = "nomic-embed-text:latest",
+        --   endpoint = "http://host.docker.internal:11434",
+        -- }
         opts.web_search_engine = {
           provider = "tavily",
         }
