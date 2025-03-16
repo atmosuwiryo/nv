@@ -166,6 +166,7 @@ local avante_prompts = {
   6. Input validation - Evaluate sanitization and validation practices
   7. Output encoding - Check for proper output encoding to prevent XSS and similar attacks
   8. Dependencies - Note any potentially vulnerable dependencies or libraries
+  9. Web3 Vulnerabilities - Identify issues specific to blockchain or decentralized applications, such as smart contract vulnerabilities, unsafe use of oracles, and other decentralized protocol weaknesses.
 
 Response Format:
 	•	Issue:
@@ -175,7 +176,7 @@ Response Format:
 	•	Recommended Fix:
 	•	OWASP Reference(if applicable):
 
-Just give me Critical and High severity vulnerabilities
+Make sure to review the and verify the results before giving them to me, Just give me Critical and High severity vulnerabilities
 ]],
 
   language_specific = {
