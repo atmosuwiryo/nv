@@ -12,7 +12,7 @@ local avante_prompts = {
   - Separation of concerns
 
   Format your response as:
-  <line_num>|<issue description and specific suggested improvement>
+  <line_num>|<severity>|<issue description and specific suggested improvement>
 
   Prioritize the most severe issues first. List no more than 5 issues unless there are multiple critical problems.
   If no issues found, respond with only: <OK>
@@ -74,13 +74,13 @@ local avante_prompts = {
   5. Memory issues - leaks, inefficient usage
 
   Response Format:
-  • Issue: <Bug Type (Runtime/Logic/etc.)>
-  • Severity: <Critical/Major/Minor>
-  • Line(s):
-  • Explanation:
-  • Before:
-  • Fixed Code:
-  • Why This Fix Works:
+  - Issue: <Bug Type (Runtime/Logic/etc.)>
+  - Severity: <Critical/Major/Minor>
+  - Line(s):
+  - Explanation:
+  - Before:
+  - Fixed Code:
+  - Why This Fix Works:
 ]],
 
   refactor = [[
@@ -113,10 +113,9 @@ local avante_prompts = {
   For each issue:
   - Reference specific line numbers
   - Rate severity (Critical/Major/Minor)
-  - Provide constructive improvement suggestions
-  - Include example code where helpful
+  - Provide improvement suggestions with example code where helpful
 
-  Balance critique with positive observations about what works well.
+  Only include Critical and Major issues. Balance critique with positive observations.
 ]],
 
   architecture_suggestion = [[
@@ -169,14 +168,13 @@ local avante_prompts = {
   9. Web3 Vulnerabilities - Identify issues specific to blockchain or decentralized applications, such as smart contract vulnerabilities, unsafe use of oracles, and other decentralized protocol weaknesses.
 
 Response Format:
-	•	Issue:
-	•	Severity: <Critical/High/Medium/Low>
-	•	Line(s):
-	•	Explanation:
-	•	Recommended Fix:
-	•	OWASP Reference(if applicable):
+	-	Issue:
+	-	Severity: <Critical/High/Medium/Low>
+	-	Line(s):
+	-	Explanation:
+	-	Recommended Fix:
 
-Make sure to review the and verify the results before giving them to me, Just give me Critical and High severity vulnerabilities
+Review thoroughly and report only Critical and High severity issues.
 ]],
 
   language_specific = {
@@ -192,7 +190,7 @@ Make sure to review the and verify the results before giving them to me, Just gi
     For each change, show:
     - Before: <original code snippet>
     - After: <improved code snippet>
-    - Why: <explanation of how this makes the code more Pythonic>
+    - Why: <explanation of how this makes the code more Lua/Neovim idiomatic>
 
     Focus on the most impactful changes first.
     Highlight what makes your optimizations specific to the Neovim environment.
@@ -285,11 +283,11 @@ Make sure to review the and verify the results before giving them to me, Just gi
        - Structure error types for better error handling
        - Apply proper patterns for database interactions
 
-•	Response Format:
-	•	Issue:
-	•	Line(s):
-	•	Suggested Fix:
-	•	Why This Fix Works:
+Response Format:
+	-	Issue:
+	-	Line(s):
+	-	Suggested Fix:
+	-	Why This Fix Works:
     ]],
   },
 

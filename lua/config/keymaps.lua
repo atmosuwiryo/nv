@@ -29,7 +29,7 @@ map("n", "<leader>qw", ":q<cr>", { noremap = true, silent = true, desc = "quit w
 map("n", "<leader><bs>", ":bd<cr>", { noremap = true, silent = true, desc = "delete buffer" })
 
 -- resume telescope after exiting
-map("n", ";", "<cmd>lua require('telescope.builtin').resume(require('telescope.themes').get_ivy({}))<cr>")
+map("n", "<leader>;", "<cmd>lua require('telescope.builtin').resume(require('telescope.themes').get_ivy({}))<cr>")
 
 -- move line up and down
 map("v", "J", ":m '>+1<CR>gv==kgvo<esc>=kgvo", { desc = "move highlighted text down" })
@@ -74,8 +74,10 @@ map("n", "X", ":bdelete!<CR>", opts)
 map("n", "L", ":bnext<CR>", opts)
 map("n", "H", ":bprev<CR>", opts)
 map("n", "gl", vim.diagnostic.open_float, opts)
-map("n", ";p", '"0P', opts) -- Paste last yanked
-map("n", "<esc>", ":set hlsearch!<CR>") -- Toggle search highlight
+map("n", ";p", '"0p', opts)
+map("n", ";c", '"_c', opts)
+map("n", ";d", '"_d', opts)
+map("n", "<esc>", ":set hlsearch!<CR>")
 
 -- code
 map("n", "<leader>uv", function()

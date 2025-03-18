@@ -21,7 +21,7 @@ return {
     event = "BufReadPre",
     keys = {
       { "<leader>gdd", "<cmd>DiffviewOpen<CR>", desc = "DiffView" },
-      { "<leader>gdh", "<cmd>DiffviewFileHistory %<CR>", desc = "History" },
+      { "<leader>gD", "<cmd>DiffviewFileHistory %<CR>", desc = "History" },
       {
         "<leader>gdm",
         function()
