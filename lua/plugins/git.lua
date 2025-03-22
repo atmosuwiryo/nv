@@ -1,5 +1,5 @@
 local get_main_branch = function()
-  local handle = io.popen("git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@'")
+  local handle = io.popen("git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null")
   if not handle then
     return ""
   end
@@ -11,7 +11,8 @@ local get_main_branch = function()
     return ""
   end
 
-  return result:gsub("\n", "")
+  local branch = result:match("refs/remotes/origin/([%w%-_/]+)")
+  return branch or ""
 end
 
 return {

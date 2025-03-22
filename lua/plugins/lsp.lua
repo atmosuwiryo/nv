@@ -44,7 +44,8 @@ return {
       enabled = false,
     }
     -- opts.servers = opts.servers or {}
-    if vim.env.USER == "abz" then
+    local pylance_bundle = vim.fn.expand("~/.pylance/extension/dist/server.bundle.js", false, true)
+    if vim.fn.empty(pylance_bundle) == 0 then
       local root_files = {
         "pyproject.toml",
         "setup.py",
@@ -70,11 +71,7 @@ return {
           end,
           cmd = {
             "node",
-            vim.fn.expand(
-              "~/.pylance/extension/dist/server.bundle.js",
-              false,
-              true
-            )[1],
+            pylance_bundle[1],
             "--stdio",
           },
           filetypes = { "python" },

@@ -112,24 +112,27 @@ local modecolor = {
   t = colors.bright_red,
 }
 
-local lsp_cache = { value = nil, timestamp = 0 }
+local lsp_cache = { value = nil, clients_hash = nil }
 local function getLspName()
-  local now = vim.loop.now()
-  if lsp_cache.value and (now - lsp_cache.timestamp) < 2000 then
-    return lsp_cache.value
-  end
-
   local bufnr = vim_api.nvim_get_current_buf()
   local buf_clients = vim.lsp.get_clients({ bufnr = bufnr })
-  local buf_ft = vim_bo.filetype
 
   if next(buf_clients) == nil then
     lsp_cache.value = "  No servers"
-    lsp_cache.timestamp = now
+    return lsp_cache.value
+  end
+
+  local current_hash = ""
+  for _, client in pairs(buf_clients) do
+    current_hash = current_hash .. client.name
+  end
+
+  if lsp_cache.clients_hash == current_hash and lsp_cache.value then
     return lsp_cache.value
   end
 
   local buf_client_names = {}
+  local buf_ft = vim_bo.filetype
 
   for _, client in pairs(buf_clients) do
     if client.name ~= "null-ls" then
@@ -172,7 +175,7 @@ local function getLspName()
 
   local language_servers = table.concat(unique_client_names, ", ")
   lsp_cache.value = language_servers
-  lsp_cache.timestamp = now
+  lsp_cache.clients_hash = current_hash
 
   return language_servers
 end

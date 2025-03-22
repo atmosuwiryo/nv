@@ -48,6 +48,8 @@ return {
       percentage = 0.15,
     },
     custom_highlights = function(c)
+      local bg_alt = "#242438"
+      local bg = "#161621"
       return {
         BlinkCmpDocBorder = { fg = c.blue },
         BlinkCmpKind = { fg = c.blue },
@@ -59,6 +61,19 @@ return {
         Cursor = { fg = c.base, bg = "#d9e0ee" },
         MarkviewPalette1Fg = { fg = "#d9e0ee" },
         TSConstBuiltin = { fg = c.maroon },
+        TelescopeBorder = { fg = bg_alt, bg = bg },
+        TelescopeNormal = { bg = bg },
+        TelescopePreviewBorder = { fg = bg, bg = bg },
+        TelescopePreviewNormal = { bg = bg },
+        TelescopePreviewTitle = { fg = bg, bg = c.green },
+        TelescopePromptBorder = { fg = bg_alt, bg = bg_alt },
+        TelescopePromptNormal = { fg = c.text, bg = bg_alt },
+        TelescopePromptPrefix = { fg = c.red, bg = bg_alt },
+        TelescopePromptTitle = { fg = bg, bg = c.red },
+        TelescopeResultsBorder = { fg = bg, bg = bg },
+        TelescopeResultsNormal = { bg = bg },
+        TelescopeResultsTitle = { fg = bg, bg = bg },
+        TelescopeSelection = { bg = bg_alt },
         TermCursor = { fg = "#000000", bg = "#B7BDF8" },
         TreesitterContextLineNumber = { fg = "#494D64", bg = "#1e2030" },
         Unvisited = { bg = "#34344F" },

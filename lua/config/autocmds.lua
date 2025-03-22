@@ -11,22 +11,24 @@ vim.api.nvim_create_user_command("OverseerRestartLast", function()
 end, {})
 
 -- Set relative line numbers in normal mode
-aucmd("InsertEnter", {
-  pattern = "*",
+aucmd({ "InsertEnter" }, {
   callback = function()
-    if vim.fn.bufname() ~= "copilot-chat" then
-      vim.opt.relativenumber = false
+    local fname = vim.fn.bufname()
+    if fname == "copilot-chat" or vim.bo.buftype == "nofile" then
+      return
     end
+    vim.opt_local.relativenumber = false
   end,
 })
 
 -- and absolute line numbers in insert mode
-aucmd("InsertLeave", {
-  pattern = "*",
+aucmd({ "InsertLeave" }, {
   callback = function()
-    if vim.fn.bufname() ~= "copilot-chat" then
-      vim.opt.relativenumber = true
+    local fname = vim.fn.bufname()
+    if fname == "copilot-chat" or vim.bo.buftype == "nofile" then
+      return
     end
+    vim.opt_local.relativenumber = true
   end,
 })
 
