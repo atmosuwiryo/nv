@@ -119,6 +119,7 @@ local function getLspName()
 
   if next(buf_clients) == nil then
     lsp_cache.value = "  No servers"
+    lsp_cache.clients_hash = ""
     return lsp_cache.value
   end
 
