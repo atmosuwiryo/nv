@@ -185,6 +185,9 @@ return {
     terminal = {
       shell = "/bin/sh",
     },
+    words = {
+      enabled = false,
+    },
     dashboard = {
       preset = {
         pick = nil,

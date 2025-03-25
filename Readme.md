@@ -15,6 +15,8 @@ A modern, feature-rich Neovim configuration focused on performance, aesthetics, 
 - 📊 Enhanced diagnostics with inline displays
 - 📝 Robust LSP configuration
 - 🔧 Optimized for performance
+- 📋 Task management with Overseer.nvim
+- 🧪 Testing environment with Neotest
 
 ## Requirements
 

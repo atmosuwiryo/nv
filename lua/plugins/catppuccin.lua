@@ -59,6 +59,7 @@ return {
         BlinkCmpSignatureHelpBorder = { fg = c.blue },
         ColorColumn = { bg = c.mantle },
         Cursor = { fg = c.base, bg = "#d9e0ee" },
+        Folded = { fg = c.lavender, bg = c.dim },
         MarkviewPalette1Fg = { fg = "#d9e0ee" },
         TSConstBuiltin = { fg = c.maroon },
         TelescopeBorder = { fg = bg_alt, bg = bg },
