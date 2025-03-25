@@ -74,7 +74,8 @@ Most configuration can be modified by editing the Lua files in the `~/.config/nv
 
 ## Preview
 
-![avante neovim](https://github.com/user-attachments/assets/9c21bb5a-71b8-4562-8ace-259bc41d234b)
+![avante neovim](https://github.com/user-attachments/assets/f1f93baa-892f-48dd-810d-460a205231f8)
+)
 ![neotest and overseer](https://github.com/user-attachments/assets/0ecde105-2744-4705-800a-35345db47fc9)
 
 
