@@ -31,7 +31,7 @@ return {
       default = function(_)
         local success, node = pcall(vim.treesitter.get_node)
         if vim.bo.filetype == "lua" then
-          return { "lazydev", "lsp", "path" }
+          return { "lazydev", "lsp", "path", "copilot" }
         elseif success and node and vim.tbl_contains({ "comment", "line_comment", "block_comment" }, node:type()) then
           return { "buffer" }
         else
@@ -45,7 +45,7 @@ return {
           module = "blink.cmp.sources.lsp",
           kind = "LSP",
           min_keyword_length = 2,
-          score_offset = 90, -- the higher the number, the higher the priority
+          score_offset = 90,
         },
         lazydev = {
           name = "LazyDev",
@@ -73,15 +73,15 @@ return {
           max_items = 3,
           module = "blink.cmp.sources.buffer",
           min_keyword_length = 4,
-          score_offset = 15, -- the higher the number, the higher the priority
+          score_offset = 15,
         },
         copilot = {
           name = "copilot",
           enabled = true,
           module = "blink-cmp-copilot",
           kind = "Copilot",
-          min_keyword_length = 6,
-          score_offset = -100, -- the higher the number, the higher the priority
+          min_keyword_length = 5,
+          score_offset = 10,
           async = true,
         },
       },
