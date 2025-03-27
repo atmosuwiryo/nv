@@ -200,7 +200,7 @@ return {
       {
         "<leader>av",
         function()
-          if vim.bo.filetype == "rust" then
+          if vim.bo.filetype == "rust" or vim.bo.filetype == "toml" then
             create_avante_call(avante_prompts.rust_design_review)()
           else
             create_avante_call(avante_prompts.code_review)()

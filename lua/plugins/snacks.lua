@@ -224,17 +224,27 @@ return {
       },
     },
     zen = {
+      toggles = {
+        dim = true,
+        git_signs = false,
+        mini_diff_signs = false,
+        diagnostics = false,
+        inlay_hints = false,
+      },
       win = {
         enter = true,
         fixbuf = false,
         minimal = false,
-        width = 150,
+        width = 140,
         height = 0,
-        backdrop = { transparent = true, blend = 10 },
+        backdrop = { transparent = true, blend = 11 },
         keys = { q = false },
         zindex = 40,
         wo = {
           winhighlight = "NormalFloat:Normal",
+        },
+        w = {
+          snacks_main = true,
         },
       },
     },

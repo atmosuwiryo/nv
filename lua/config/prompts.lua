@@ -444,6 +444,7 @@ Async Ecosystem
 - Use `clap` as CLI framework.
 - Use `dotenv` for configuration management(environment variables).
 - Leverage `reqwest` for async HTTP requests.
+- Leverage `fastrace` for tracing
 - Leverage `chrono` for date & time.
 - Utilize `tonic` for gRPC with async support.
 - Utilize `tokio-tungstenite` for websockets if needed.

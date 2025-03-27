@@ -196,5 +196,4 @@ M.kind_icons = {
   Variable = "󰆦",
 }
 
-
 return M
