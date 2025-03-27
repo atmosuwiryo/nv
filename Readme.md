@@ -70,12 +70,13 @@ Most configuration can be modified by editing the Lua files in the `~/.config/nv
 - `config/options.lua` - General Neovim options
 - `config/keymaps.lua` - Key mappings
 - `config/autocmds.lua` - Autocommands
+- `config/utils.lua` - utility functions
 - `plugins/*.lua` - Plugin-specific configurations
 
 ## Preview
 
 ![avante neovim](https://github.com/user-attachments/assets/f1f93baa-892f-48dd-810d-460a205231f8)
-)
+
 ![neotest and overseer](https://github.com/user-attachments/assets/0ecde105-2744-4705-800a-35345db47fc9)
 
 
