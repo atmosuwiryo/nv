@@ -1,7 +1,9 @@
 local opt = vim.opt
+local global = vim.g
+local cmd = vim.cmd
 
 local function link(group, other)
-  vim.cmd("highlight! link " .. group .. " " .. other)
+  cmd("highlight! link " .. group .. " " .. other)
 end
 
 -- add highlighting to weird files
@@ -28,7 +30,7 @@ vim.filetype.add({
 })
 
 -- don't show tab indicators
-vim.opt.listchars = { tab = "  " }
+opt.listchars = { tab = "  " }
 
 -- default options
 opt.ttyfast = true
@@ -38,12 +40,12 @@ opt.timeoutlen = 250
 opt.redrawtime = 1500
 opt.ttimeoutlen = 10
 opt.wrapscan = true -- Searches wrap around the end of the file
-vim.o.secure = true -- Disable autocmd etc for project local vimrc files.
-vim.o.exrc = false -- Allow project local vimrc files example .nvimrc see :h exrc
+opt.secure = true -- Disable autocmd etc for project local vimrc files.
+opt.exrc = false -- Allow project local vimrc files example .nvimrc see :h exrc
 opt.confirm = true -- make vim prompt me to save before doing destructive things
 opt.autowriteall = true -- automatically :write before running commands and changing files
-vim.g.editorconfig = true
-vim.g.lazyvim_blink_main = true
+global.editorconfig = true
+global.lazyvim_blink_main = true
 opt.backupskip = "/tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*,/private/var/*,.vault.vim"
 opt.ignorecase = true -- Case insensitive search
 opt.smartcase = true -- Case sensitive when uppercase
@@ -112,15 +114,15 @@ opt.scrolloff = 10
 opt.sidescrolloff = 10
 
 -- disable autoformat
-vim.g.autoformat = false
+global.autoformat = false
 
 -- custom
 if vim.env.USER == "abz" then
-  vim.g.lazyvim_python_lsp = "pylance"
+  global.lazyvim_python_lsp = "pylance"
 else
-  vim.g.lazyvim_python_lsp = "basedpyright"
+  global.lazyvim_python_lsp = "basedpyright"
 end
-vim.g.lazyvim_python_ruff = "ruff"
+global.lazyvim_python_ruff = "ruff"
 
 -- highlights
 link("MarkviewHeading1", "rainbow1")
@@ -139,6 +141,6 @@ opt.foldtext = "v:lua.require'config.utils'.foldtext()"
 opt.qftf = "{info -> v:lua.require'config.utils'.qftf(info)}"
 
 --bufferline
-vim.g.toggle_theme_icon = "   "
-vim.cmd("function! TbToggle_theme(a,b,c,d) \n lua require('config.utils').toggle_theme() \n endfunction")
-vim.cmd("function! Quit_vim(a,b,c,d) \n qa \n endfunction")
+global.toggle_theme_icon = "   "
+cmd("function! TbToggle_theme(a,b,c,d) \n lua require('config.utils').toggle_theme() \n endfunction")
+cmd("function! Quit_vim(a,b,c,d) \n qa \n endfunction")
