@@ -13,19 +13,20 @@ vim.filetype.add({
     wiki = "markdown",
   },
   filename = {
-    [".env"] = "sh",
-    [".env.example"] = "sh",
+    [".env"] = "config",
     [".envrc"] = "sh",
     [".envrc.local"] = "sh",
-    ["requirements.txt"] = "config",
+    [".zshrc"] = "sh",
+    ["go.mod"] = "gomod",
+    ["go.sum"] = "gosum",
     ["requirements-dev.txt"] = "config",
     ["requirements-test.txt"] = "config",
-    ["go.sum"] = "gosum",
-    ["go.mod"] = "gomod",
+    ["requirements.txt"] = "config",
   },
   pattern = {
+    ["%.env.*"] = "config",
     ["*.tml"] = "gohtmltmpl",
-    ["%.env.*"] = "sh",
+    ["gitconf.*"] = "gitconfig",
   },
 })
 
