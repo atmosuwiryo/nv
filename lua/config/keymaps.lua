@@ -35,6 +35,10 @@ map("n", "<leader>;", "<cmd>lua require('telescope.builtin').resume(require('tel
 map("v", "J", ":m '>+1<CR>gv==kgvo<esc>=kgvo", { desc = "move highlighted text down" })
 map("v", "K", ":m '<-2<CR>gv==jgvo<esc>=jgvo", { desc = "move highlighted text up" })
 
+-- better indenting
+map("v", "<", "<gv", { desc = "Indent left" })
+map("v", ">", ">gv", { desc = "Indent right" })
+
 -- floating terminal
 map("n", "<c-/>", function()
   term.toggle()

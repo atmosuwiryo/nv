@@ -11,6 +11,8 @@ return {
       formatters_by_ft = {
         bash = { "shfmt" },
         css = { "prettierd" },
+        dependabot = { "yamlfmt" },
+        gha = { "yamlfmt" },
         html = { "prettierd" },
         javascript = { "prettierd" },
         javascriptreact = { "prettierd" },
@@ -27,6 +29,7 @@ return {
         shell = { "shfmt" },
         typescript = { "prettierd" },
         typescriptreact = { "prettierd" },
+        yaml = { "yamlfmt" },
       },
       formatters = {
         black = {
@@ -38,6 +41,12 @@ return {
         },
         shfmt = {
           prepend_args = { "-i", "2", "-ci" },
+        },
+        yamlfmt = {
+          prepend_args = {
+            "-formatter",
+            "retain_line_breaks_single=true",
+          },
         },
       },
     }

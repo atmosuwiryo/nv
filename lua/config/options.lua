@@ -26,12 +26,19 @@ vim.filetype.add({
   pattern = {
     ["%.env.*"] = "config",
     ["*.tml"] = "gohtmltmpl",
+    [".*/%.github/dependabot.yaml"] = "dependabot",
+    [".*/%.github/dependabot.yml"] = "dependabot",
+    [".*/%.github/workflows/[%w/]+.*%.yaml"] = "gha",
+    [".*/%.github/workflows[%w/]+.*%.yml"] = "gha",
     ["gitconf.*"] = "gitconfig",
   },
 })
+vim.treesitter.language.register("yaml", "gha")
+vim.treesitter.language.register("yaml", "dependabot")
 
 -- don't show tab indicators
 opt.listchars = { tab = "  " }
+-- opt.listchars = "tab:▸ ,trail:·,nbsp:␣,extends:❯,precedes:❮" -- show symbols for whitespace
 
 -- default options
 opt.ttyfast = true
@@ -58,7 +65,7 @@ opt.clipboard:append("unnamedplus") -- Enable copying to system clipboard
 opt.fillchars = {
   fold = " ",
   eob = " ", -- suppress ~ at EndOfBuffer
-  diff = "╱", -- alternatives = ⣿ ░ ─
+  diff = "░", -- ╱ ⣿ ░ ─
   msgsep = "‾",
   foldopen = "▾",
   foldsep = "│",

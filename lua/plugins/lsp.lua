@@ -58,6 +58,33 @@ return {
         local ep = vim.fn.exepath(expr)
         return ep ~= "" and ep or nil
       end
+      opts.servers.yamlls = {
+        cmd = { "yaml-language-server", "--stdio" },
+        filetypes = { "yaml", "gha", "dependabot", "yaml", "yaml.docker-compose", "yaml.gitlab" },
+        root_markers = { ".git" },
+        settings = {
+          redhat = { telemetry = { enabled = false } },
+          yaml = {
+            schemaStore = {
+              enable = false,
+              url = "",
+            },
+            schemas = require("schemastore").yaml.schemas(),
+            validate = true,
+            format = {
+              enable = false, -- delegate to conform.nvim
+            },
+          },
+        },
+      }
+      opts.servers.dockerls = {
+        cmd = { "docker-langserver", "--stdio" },
+        filetypes = { "dockerfile" },
+        root_markers = { "Dockerfile" },
+        settings = {
+          docker = {},
+        },
+      }
       local configs = require("lspconfig.configs")
       configs.pylance = {
         default_config = {

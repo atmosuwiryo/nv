@@ -48,6 +48,12 @@ return {
             vim.wo.colorcolumn = ""
           end,
         },
+        view = {
+          merge_tool = {
+            disable_diagnostics = false,
+            winbar_info = true,
+          },
+        },
         enhanced_diff_hl = true,
         keymaps = {
           view = { q = "<Cmd>DiffviewClose<CR>" },
