@@ -196,4 +196,13 @@ M.kind_icons = {
   Variable = "󰆦",
 }
 
+M.is_mcp_present = function()
+  local mcp_server_file = vim.fn.expand("~/.mcpservers.json", false, true)
+  if vim.fn.empty(mcp_server_file) == 0 then
+    return true
+  else
+    return false
+  end
+end
+
 return M

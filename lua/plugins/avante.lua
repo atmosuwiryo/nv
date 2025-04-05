@@ -49,15 +49,6 @@ return {
     version = false,
     opts = function()
       local opts = {
-        system_prompt = function()
-          local hub = require("mcphub").get_hub_instance()
-          return hub:get_active_servers_prompt()
-        end,
-        custom_tools = function()
-          return {
-            require("mcphub.extensions.avante").mcp_tool(),
-          }
-        end,
         provider = "copilot",
         rag_service = {
           enabled = false,
@@ -148,7 +139,17 @@ return {
           provider = "tavily",
         }
       end
-
+      if require("config.utils").is_mcp_present() then
+        opts.system_prompt = function()
+          local hub = require("mcphub").get_hub_instance()
+          return hub:get_active_servers_prompt()
+        end
+        opts.custom_tools = function()
+          return {
+            require("mcphub.extensions.avante").mcp_tool(),
+          }
+        end
+      end
       return opts
     end,
     build = "make",

@@ -3,6 +3,7 @@ return {
   dependencies = {
     "nvim-lua/plenary.nvim",
   },
+  enabled = require("config.utils").is_mcp_present(),
   event = "BufReadPost",
   -- cmd = "MCPHub",
   build = "npm install -g mcp-hub@latest",
