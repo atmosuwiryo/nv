@@ -4,6 +4,9 @@ return {
   opts = {
     defaults = {
       layout_strategy = "horizontal",
+      preview = {
+        treesitter = false,
+      },
       layout_config = {
         width = 0.90,
         height = 0.85,
