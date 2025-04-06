@@ -125,7 +125,8 @@ opt.sidescrolloff = 10
 global.autoformat = false
 
 -- custom
-if vim.env.USER == "abz" then
+local pylance_bundle = "~/.pylance/extension/dist/server.bundle.js"
+if vim.uv.fs_stat(pylance_bundle) then
   global.lazyvim_python_lsp = "pylance"
 else
   global.lazyvim_python_lsp = "basedpyright"
