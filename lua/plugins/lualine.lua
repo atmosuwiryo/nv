@@ -426,6 +426,25 @@ return {
           lualine_z = {},
         },
       }
+      table.insert(opts.sections.lualine_x, 2, {
+        function()
+          local clients = package.loaded["copilot"] and LazyVim.lsp.get_clients({ name = "copilot", bufnr = 0 }) or {}
+          if #clients > 0 then
+            local ok, copilot_status = pcall(require, "copilot.status")
+            if ok then
+              local status = copilot_status.data.status
+              return (status == "InProgress" and " ⌛")
+                or (status == "Warning" and " ⚠️")
+                or LazyVim.config.icons.kinds.Copilot
+            end
+          end
+          return ""
+        end,
+        cond = conditions.buffer_not_empty and conditions.hide_small,
+        color = function()
+          return { fg = colors.fg, bg = colors.bg_dark }
+        end,
+      })
 
       local auto = require("lualine.themes.auto")
       local lualine_modes = { "insert", "normal", "visual", "command", "replace", "inactive", "terminal" }
