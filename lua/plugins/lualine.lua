@@ -277,32 +277,9 @@ return {
 
       local location = {
         function()
-          local function format_file_size()
-            local ft = vim_bo.filetype
-            if ft == "markdown" or ft == "text" or ft == "tex" then
-              -- return " " .. tostring(vim.fn.wordcount().words) .. "W"
-              return string.format("%dW", tostring(vim.fn.wordcount().words))
-            end
-            local file = vim.fn.expand("%:p")
-            if file == nil or file == "" then
-              return ""
-            end
-            local size = vim.fn.getfsize(file)
-            if size <= 0 then
-              return ""
-            end
-            local units = { "B", "KB", "MB", "GB" }
-            local unit_index = 1
-            while size > 1024 and unit_index < #units do
-              size = size / 1024
-              unit_index = unit_index + 1
-            end
-            return string.format("%.f%s", size, units[unit_index])
-          end
-
           local line = vim.fn.line(".")
           local col = vim.fn.charcol(".")
-          return string.format("%3d:%-2d ", line, col) .. format_file_size()
+          return string.format("%3d:%-2d", line, col)
         end,
         color = { bg = colors.yellow, fg = colors.bg_dark, gui = "bold" },
         separator = { left = "", right = "" },
@@ -438,10 +415,8 @@ return {
             filename,
             location,
           },
-          lualine_x = {
-            overseer,
-          },
-          lualine_y = { macro },
+          lualine_x = { macro },
+          lualine_y = { overseer },
           lualine_z = {
             dia,
             lsp,
@@ -457,7 +432,7 @@ return {
           lualine_z = {},
         },
       }
-      table.insert(opts.sections.lualine_x, 3, {
+      table.insert(opts.sections.lualine_y, 3, {
         function()
           local clients = package.loaded["copilot"] and LazyVim.lsp.get_clients({ name = "copilot", bufnr = 0 }) or {}
           if #clients > 0 then
@@ -479,7 +454,7 @@ return {
         separator = { left = "", right = "" },
       })
       if require("config.utils").is_mcp_present() then
-        table.insert(opts.sections.lualine_x, 1, {
+        table.insert(opts.sections.lualine_y, 1, {
           function()
             local mel = require("mcphub.extensions.lualine")
             mel:create_autocommands()
