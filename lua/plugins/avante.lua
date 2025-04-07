@@ -64,6 +64,18 @@ return {
           max_tokens = 32768,
           disable_tools = true,
           telemetry = false,
+          disabled_tools = {
+            "list_files",
+            "search_files",
+            "read_file",
+            "create_file",
+            "rename_file",
+            "delete_file",
+            "create_dir",
+            "rename_dir",
+            "delete_dir",
+            "bash",
+          },
         },
         suggestion = {
           debounce = 900,

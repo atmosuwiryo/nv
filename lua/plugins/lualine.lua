@@ -393,7 +393,9 @@ return {
 
       local overseer = {
         "overseer",
-        color = { fg = colors.blue, bg = colors.bg_dark },
+        -- color = { fg = colors.blue, bg = colors.bg_dark },
+        separator = { left = "", right = "" },
+        color = { bg = colors.gray2, fg = colors.blue, gui = "italic,bold" },
       }
 
       local lsp = {
@@ -439,7 +441,7 @@ return {
           lualine_x = {
             overseer,
           },
-          lualine_y = { macro, space },
+          lualine_y = { macro },
           lualine_z = {
             dia,
             lsp,
@@ -455,25 +457,49 @@ return {
           lualine_z = {},
         },
       }
-      table.insert(opts.sections.lualine_x, 2, {
+      table.insert(opts.sections.lualine_x, 3, {
         function()
           local clients = package.loaded["copilot"] and LazyVim.lsp.get_clients({ name = "copilot", bufnr = 0 }) or {}
           if #clients > 0 then
             local ok, copilot_status = pcall(require, "copilot.status")
             if ok then
               local status = copilot_status.data.status
-              return (status == "InProgress" and " ⌛")
-                or (status == "Warning" and " ⚠️")
+              return (status == "InProgress" and "󰔟")
+                or (status == "Warning" and "")
                 or LazyVim.config.icons.kinds.Copilot
             end
           end
           return ""
         end,
         cond = conditions.buffer_not_empty and conditions.hide_small,
-        color = function()
-          return { fg = colors.fg, bg = colors.bg_dark }
-        end,
+        -- color = function()
+        --   return { fg = colors.fg, bg = colors.bg_dark }
+        -- end,
+        color = { bg = colors.gray2, fg = colors.blue, gui = "italic,bold" },
+        separator = { left = "", right = "" },
       })
+      if require("config.utils").is_mcp_present() then
+        table.insert(opts.sections.lualine_x, 1, {
+          function()
+            local mel = require("mcphub.extensions.lualine")
+            mel:create_autocommands()
+            local status_icon, _ = mel:get_status_display()
+
+            -- Show either the spinner or the number of active servers
+            local count_or_spinner = (
+              vim.g.mcphub_tool_active
+              or vim.g.mcphub_resource_active
+              or vim.g.mcphub_prompt_active
+            )
+                and "⠋"
+              or tostring(vim.g.mcphub_active_servers or 0)
+            return status_icon .. " " .. count_or_spinner
+          end,
+          color = { bg = colors.gray2, fg = colors.blue, gui = "italic,bold" },
+          separator = { left = "", right = "" },
+          cond = conditions.buffer_not_empty and conditions.hide_small,
+        })
+      end
 
       local auto = require("lualine.themes.auto")
       local lualine_modes = { "insert", "normal", "visual", "command", "replace", "inactive", "terminal" }
