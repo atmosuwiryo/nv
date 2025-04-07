@@ -120,6 +120,7 @@ local scrollbar = {
       "🬂",
       "🮃",
       "▀",
+      "━",
       "▄",
       "▃",
       "🬭",
@@ -275,7 +276,34 @@ return {
       }
 
       local location = {
-        "location",
+        function()
+          local function format_file_size()
+            local ft = vim_bo.filetype
+            if ft == "markdown" or ft == "text" or ft == "tex" then
+              -- return " " .. tostring(vim.fn.wordcount().words) .. "W"
+              return string.format("%dW", tostring(vim.fn.wordcount().words))
+            end
+            local file = vim.fn.expand("%:p")
+            if file == nil or file == "" then
+              return ""
+            end
+            local size = vim.fn.getfsize(file)
+            if size <= 0 then
+              return ""
+            end
+            local units = { "B", "KB", "MB", "GB" }
+            local unit_index = 1
+            while size > 1024 and unit_index < #units do
+              size = size / 1024
+              unit_index = unit_index + 1
+            end
+            return string.format("%.f%s", size, units[unit_index])
+          end
+
+          local line = vim.fn.line(".")
+          local col = vim.fn.charcol(".")
+          return string.format("%3d:%-2d ", line, col) .. format_file_size()
+        end,
         color = { bg = colors.yellow, fg = colors.bg_dark, gui = "bold" },
         separator = { left = "", right = "" },
         cond = conditions.buffer_not_empty and conditions.hide_small,
@@ -373,6 +401,7 @@ return {
           return getLspName()
         end,
         separator = { left = "", right = "" },
+        cond = conditions.hide_small,
         color = { bg = colors.purple, fg = colors.bg, gui = "italic,bold" },
       }
 
