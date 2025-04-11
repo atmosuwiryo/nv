@@ -25,15 +25,19 @@ local conditions = {
 
 local mode = function()
   local mod = vim_fn.mode()
-  local _time = os.date("*t")
-  local selector = math.floor(_time.hour / 8) + 1
+  local selector = vim.g.lualine_icon_selector
+  if selector == nil then
+    math.randomseed(os.time())
+    vim.g.lualine_icon_selector = math.random(7)
+    selector = vim.g.lualine_icon_selector
+  end
 
   local icons = {
-    normal = { " 󰊠 ", "  ", "  " },
-    insert = { "  ", "  ", "  " },
-    visual = { "  ", "  ", "  " },
-    command = { " 󰏒 ", "  ", "  " },
-    replace = { "  ", "  ", "  " },
+    normal = { " 󰊠 ", "  ", "  ", "  ", "  ", "  ", "  " }, --  ,  , 󱗃 , 
+    insert = { "  ", "  ", " 󰣙 ", "  ", " 󰛓 ", "  ", " 󰧑 " }, --  , ,  ,  , 󰣘
+    visual = { "  ", "  ", "  ", "  ", "  ", "  ", "  " }, --  ,   , 󰹭
+    command = { " 󰏒 ", "  ", "  ", " 󰘳 ", " 󰼭 ", "  ", "  " }, --  ,  , 󰤱 ,  ,  , 
+    replace = { "  ", "  ", " 󱩡 ", " 󰤇 ", "  ", " 󰠥 ", "  " }, --  , 󰫿,  󱄛
   }
   local mode_groups = {
     normal = { "n", "no", "nov" },
