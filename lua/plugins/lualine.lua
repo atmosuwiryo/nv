@@ -23,39 +23,39 @@ local conditions = {
   end,
 }
 
+local icons = {
+  normal = { " 󰊠 ", "  ", "  ", "  ", "  ", "  ", "  " }, --  , 󱗃 ,  , 󰮣 , 󰌪 , 󰋊
+  insert = { "  ", "  ", " 󰣙 ", "  ", " 󰛓 ", "  ", " 󰧑 " }, --  , ,   , 󰚥, 
+  visual = { "  ", "  ", "  ", "  ", "  ", "  ", "  " }, --  ,   , 󰹭 ,
+  command = { " 󰏒 ", "  ", "  ", " 󰘳 ", " 󰼭 ", "  ", "  " }, --  ,  , 󰤱 , 
+  replace = { "  ", "  ", "  ", " 󰤇 ", " 󰛗 ", "  ", " 󱩡 " }, --  , 󰫿,  󱄛 ,  , 󰠥 , 
+}
+local mode_groups = {
+  normal = { "n", "no", "nov" },
+  insert = { "i", "ic", "ix" },
+  visual = { "V", "v", "vs", "Vs", "cv" },
+  command = { "c", "ce" },
+  replace = { "r", "rm", "r?", "R", "Rc", "Rv" },
+}
+
+local mode_to_group = {}
+for group, modes in pairs(mode_groups) do
+  for _, m in ipairs(modes) do
+    mode_to_group[m] = group
+  end
+end
+
 local mode = function()
   local mod = vim_fn.mode()
   local selector = vim.g.lualine_icon_selector
   if selector == nil then
     math.randomseed(os.time())
-    vim.g.lualine_icon_selector = math.random(7)
+    vim.g.lualine_icon_selector = math.random(#icons.normal)
     selector = vim.g.lualine_icon_selector
   end
 
-  local icons = {
-    normal = { " 󰊠 ", "  ", "  ", "  ", "  ", "  ", "  " }, --  ,  , 󱗃 , 
-    insert = { "  ", "  ", " 󰣙 ", "  ", " 󰛓 ", "  ", " 󰧑 " }, --  , ,  ,  , 󰣘
-    visual = { "  ", "  ", "  ", "  ", "  ", "  ", "  " }, --  ,   , 󰹭
-    command = { " 󰏒 ", "  ", "  ", " 󰘳 ", " 󰼭 ", "  ", "  " }, --  ,  , 󰤱 ,  ,  , 
-    replace = { "  ", "  ", " 󱩡 ", " 󰤇 ", "  ", " 󰠥 ", "  " }, --  , 󰫿,  󱄛
-  }
-  local mode_groups = {
-    normal = { "n", "no", "nov" },
-    insert = { "i", "ic", "ix" },
-    visual = { "V", "v", "vs", "Vs", "cv" },
-    command = { "c", "ce" },
-    replace = { "r", "rm", "r?", "R", "Rc", "Rv" },
-  }
-
-  for group, modes in pairs(mode_groups) do
-    for _, m in ipairs(modes) do
-      if mod == m then
-        return icons[group][selector]
-      end
-    end
-  end
-
-  return icons.normal[selector]
+  local group = mode_to_group[mod] or "normal"
+  return icons[group][selector]
 end
 
 local colors = {
@@ -217,6 +217,10 @@ return {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
     config = function()
+      local noice_status_mode = require("noice").api.status.mode
+      local copilot_status_ok, copilot_status
+      local mel_ok, mel
+
       local space = {
         function()
           return " "
@@ -353,8 +357,8 @@ return {
       }
 
       local macro = {
-        require("noice").api.status.mode.get,
-        cond = require("noice").api.status.mode.has,
+        noice_status_mode.get,
+        cond = noice_status_mode.has,
         color = { fg = colors.red, bg = colors.bg_dark, gui = "italic,bold" },
       }
 
@@ -440,8 +444,10 @@ return {
         function()
           local clients = package.loaded["copilot"] and LazyVim.lsp.get_clients({ name = "copilot", bufnr = 0 }) or {}
           if #clients > 0 then
-            local ok, copilot_status = pcall(require, "copilot.status")
-            if ok then
+            if not copilot_status then
+              copilot_status_ok, copilot_status = pcall(require, "copilot.status")
+            end
+            if copilot_status_ok then
               local status = copilot_status.data.status
               return (status == "InProgress" and "󰔟")
                 or (status == "Warning" and "")
@@ -451,16 +457,19 @@ return {
           return ""
         end,
         cond = conditions.buffer_not_empty and conditions.hide_small,
-        -- color = function()
-        --   return { fg = colors.fg, bg = colors.bg_dark }
-        -- end,
         color = { bg = colors.gray2, fg = colors.blue, gui = "italic,bold" },
         separator = { left = "", right = "" },
       })
       if require("config.utils").is_mcp_present() then
         table.insert(opts.sections.lualine_y, 1, {
           function()
-            local mel = require("mcphub.extensions.lualine")
+            if not mel then
+              mel_ok, mel = pcall(require, "mcphub.extensions.lualine")
+            end
+            if not mel_ok then
+              return "? MCP"
+            end
+
             mel:create_autocommands()
             local status_icon, _ = mel:get_status_display()
 
