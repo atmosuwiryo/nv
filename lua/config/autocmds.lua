@@ -49,6 +49,13 @@ aucmd({ "BufEnter", "InsertLeave" }, {
   end,
 })
 
+aucmd({ "BufEnter" }, {
+  pattern = { "*.csv" },
+  callback = function()
+    vim.cmd("set noarabicshape")
+  end,
+})
+
 aucmd("TermOpen", {
   pattern = "term://*",
   callback = function()
