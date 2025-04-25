@@ -26,6 +26,7 @@ require("lazy").setup({
     "tokyonight",
     "catppuccin",
     "habamax",
+    "vim-winteriscoming",
   } },
   checker = {
     enabled = false,
