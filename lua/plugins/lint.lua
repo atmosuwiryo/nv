@@ -8,7 +8,7 @@ return {
       sh = { "shellcheck" },
       terraform = { "terraform_validate", "tflint", "trivy" },
       tf = { "terraform_validate", "tflint", "trivy" },
-      typescript = { "prettierd" },
+      typescript = { "eslint_d" },
       yaml = { "yamllint" },
     },
     linters = {
