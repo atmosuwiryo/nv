@@ -43,7 +43,95 @@ return {
     opts.inlay_hints = {
       enabled = false,
     }
-    -- opts.servers = opts.servers or {}
+    
+    -- TypeScript/Angular/NestJS configuration
+    opts.servers = opts.servers or {}
+    opts.servers.tsserver = {
+      settings = {
+        typescript = {
+          inlayHints = {
+            includeInlayParameterNameHints = "all",
+            includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+            includeInlayFunctionParameterTypeHints = true,
+            includeInlayVariableTypeHints = true,
+            includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+            includeInlayPropertyDeclarationTypeHints = true,
+            includeInlayFunctionLikeReturnTypeHints = true,
+            includeInlayEnumMemberValueHints = true,
+          },
+          suggest = {
+            completeFunctionCalls = true,
+          },
+        },
+        javascript = {
+          inlayHints = {
+            includeInlayParameterNameHints = "all",
+            includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+            includeInlayFunctionParameterTypeHints = true,
+            includeInlayVariableTypeHints = true,
+            includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+            includeInlayPropertyDeclarationTypeHints = true,
+            includeInlayFunctionLikeReturnTypeHints = true,
+            includeInlayEnumMemberValueHints = true,
+          },
+          suggest = {
+            completeFunctionCalls = true,
+          },
+        },
+      },
+    }
+    
+    -- Angular Language Service configuration
+    opts.servers.angularls = {
+      filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
+      root_dir = require("lspconfig.util").root_pattern("angular.json", "project.json"),
+    }
+
+    -- ESLint configuration
+    opts.servers.eslint = {
+      filetypes = {
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "vue",
+        "html",
+      },
+      settings = {
+        workingDirectory = { mode = "auto" },
+        format = { enable = true },
+        lint = { enable = true },
+      },
+    }
+    
+    -- HTML configuration
+    opts.servers.html = {
+      filetypes = { "html" },
+      init_options = {
+        configurationSection = { "html", "css", "javascript" },
+        embeddedLanguages = {
+          css = true,
+          javascript = true,
+        },
+        provideFormatter = true,
+      },
+    }
+
+    -- CSS language server
+    opts.servers.cssls = {
+      filetypes = { "css", "scss", "less" },
+    }
+    
+    -- JSON language server (useful for package.json, tsconfig.json, etc.)
+    opts.servers.jsonls = {
+      settings = {
+        json = {
+          schemas = require("schemastore").json.schemas(),
+          validate = { enable = true },
+        },
+      },
+    }
+    
     local pylance_bundle = vim.fn.expand("~/.pylance/extension/dist/server.bundle.js")
     if vim.uv.fs_stat(pylance_bundle) then
       local root_files = {
