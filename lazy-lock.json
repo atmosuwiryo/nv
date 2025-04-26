@@ -67,6 +67,7 @@
   "typr": { "branch": "main", "commit": "ec1abe68229a0c3480ae2df51e1807fd091261ba" },
   "undotree": { "branch": "master", "commit": "b951b87b46c34356d44aa71886aecf9dd7f5788a" },
   "venv-selector.nvim": { "branch": "regexp", "commit": "c677caa1030808a9f90092e522de7cc20c1390dd" },
+  "vim-tmux-navigator": { "branch": "master", "commit": "33afa80db65113561dc53fa732b7f5e53d5ecfd0" },
   "vim-tpipeline": { "branch": "master", "commit": "72a624f97730059bab359cb0b58a23433bfec308" },
   "vim-winteriscoming": { "branch": "main", "commit": "84cf33abb4eda6ba6cd2a039bb172c7d1f93380e" },
   "volt": { "branch": "main", "commit": "c45d5f48da8e802e608b5c6da471ca4d84276dfb" },
