@@ -114,6 +114,10 @@ map("n", "<A-Right>", ":vertical resize -2<CR>", opts)
 
 map("n", "<CR>", function()
   local cur_win = vim.api.nvim_get_current_win()
+  local buf = vim.api.nvim_win_get_buf(cur_win)
+  if vim.bo[buf].buftype == "quickfix" then
+    return
+  end
   vim.api.nvim_set_var("non_float_total", 0)
   vim.cmd("windo if &buftype != 'nofile' | let g:non_float_total += 1 | endif")
   vim.api.nvim_set_current_win(cur_win or 0)
