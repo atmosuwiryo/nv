@@ -118,7 +118,7 @@ map("n", "<CR>", function()
 
   if vim.bo[buf].buftype ~= "quickfix" then
     vim.api.nvim_set_var("non_float_total", 0)
-    vim.cmd("silent! windo if &buftype != 'nofile' | let g:non_float_total += 1 | endif") -- Added silent! to avoid potential errors showing
+    vim.cmd("silent! windo if &buftype != 'nofile' | let g:non_float_total += 1 | endif")
     vim.api.nvim_set_current_win(cur_win or 0)
     if vim.api.nvim_get_var("non_float_total") == 1 then
       if vim.fn.tabpagenr("$") == 1 then

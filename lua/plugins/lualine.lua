@@ -270,7 +270,7 @@ return {
       local filetype = {
         "filetype",
         icons_enabled = false,
-        color = { bg = colors.gray2, fg = colors.blue, gui = "italic,bold" },
+        color = { bg = colors.gray2, fg = colors.blue, gui = "bold" },
         separator = { left = "", right = "" },
         cond = conditions.buffer_not_empty and conditions.hide_small,
       }
@@ -323,7 +323,7 @@ return {
           return ""
         end,
         separator = { left = "", right = "" },
-        color = { bg = colors.gray2, fg = colors.blue, gui = "italic,bold" },
+        color = { bg = colors.gray2, fg = colors.blue, gui = "bold" },
         cond = conditions.hide_in_width,
       }
 
@@ -357,9 +357,15 @@ return {
       }
 
       local macro = {
-        noice_status_mode.get,
+        function()
+          local reg = vim.fn.reg_recording()
+          if reg ~= "" then
+            return "󰃼 @" .. reg
+          end
+          return ""
+        end,
         cond = noice_status_mode.has,
-        color = { fg = colors.red, bg = colors.bg_dark, gui = "italic,bold" },
+        color = { fg = colors.red, bg = colors.bg_dark, gui = "bold" },
       }
 
       local dia = {
@@ -380,7 +386,7 @@ return {
         "overseer",
         -- color = { fg = colors.blue, bg = colors.bg_dark },
         separator = { left = "", right = "" },
-        color = { bg = colors.gray2, fg = colors.blue, gui = "italic,bold" },
+        color = { bg = colors.gray2, fg = colors.blue, gui = "bold" },
       }
 
       local lsp = {
@@ -389,7 +395,7 @@ return {
         end,
         separator = { left = "", right = "" },
         cond = conditions.hide_small,
-        color = { bg = colors.purple, fg = colors.bg, gui = "italic,bold" },
+        color = { bg = colors.purple, fg = colors.bg, gui = "bold" },
       }
 
       local opts = {
@@ -457,7 +463,7 @@ return {
           return ""
         end,
         cond = conditions.buffer_not_empty and conditions.hide_small,
-        color = { bg = colors.gray2, fg = colors.blue, gui = "italic,bold" },
+        color = { bg = colors.gray2, fg = colors.blue, gui = "bold" },
         separator = { left = "", right = "" },
       })
       if require("config.utils").is_mcp_present() then
@@ -483,7 +489,7 @@ return {
               or tostring(vim.g.mcphub_active_servers or 0)
             return status_icon .. " " .. count_or_spinner
           end,
-          color = { bg = colors.gray2, fg = colors.blue, gui = "italic,bold" },
+          color = { bg = colors.gray2, fg = colors.blue, gui = "bold" },
           separator = { left = "", right = "" },
           cond = conditions.buffer_not_empty and conditions.hide_small,
         })
